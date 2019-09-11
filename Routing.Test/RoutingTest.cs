@@ -52,9 +52,46 @@ namespace Routing.Test
             Assert.True(fallbackWasCalled);
         }
 
+        [Fact]
+        public void CallsRegisteredRoute()
+        {
+            AssertRouteWasCalled(routeRegistry =>
+            {
+                routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
+            });
+        }
+
+        private static void AssertRouteWasCalled(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        {
+            var routeWasCalled = false;
+
+            Unit HandleRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                routeWasCalled = true;
+                return new Unit();
+            }
+            
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, "/foo", HandleRequest);
+
+            stateManipulation(routeRegistry);
+
+            Assert.True(routeWasCalled);
+        }
+
         private static Unit HandleDummyRoute(Unit request, IDictionary<string, string> routeParams)
         {
             return new Unit();
+        }
+
+        private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
+        {
+            return new RouteRegistry<Unit, Unit>(FailOnRequest);
+        }
+
+        private static Unit FailOnRequest(Unit request, IDictionary<string, string> routeParams)
+        {
+            throw new InvalidOperationException("Fallback request handler was unexpectedly called");
         }
     }
 }
