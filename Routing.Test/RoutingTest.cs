@@ -44,8 +44,8 @@ namespace Routing.Test
             AssertCallToDefaultRoute(routeRegistry =>
             {
                 const string route = "/foo";
-                routeRegistry.Register(HttpMethod.Post, route, HandleDummyRoute);
-                routeRegistry.Remove(HttpMethod.Post, route);
+                routeRegistry.Register(HttpMethod.Get, route, HandleDummyRoute);
+                routeRegistry.Remove(HttpMethod.Get, route);
                 routeRegistry.Route(HttpMethod.Get, route, new Unit());
             });
         }
