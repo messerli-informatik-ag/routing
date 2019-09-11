@@ -1,20 +1,8 @@
 ﻿using System.Collections.Generic;
-
-using RouteParams = System.Collections.Generic.IDictionary<string, string>;
+using System.Net.Http;
 
 namespace Routing
 {
-    public delegate TResponse HandleRequest<out TResponse, in TRequest>(TRequest request, RouteParams routeParams);
-
-    public interface IRouteRegistry<TResponse, TRequest>
-    {
-        TResponse Route(HttpMethod method, string path, TRequest request);
-
-        void Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest);
-
-        void Remove(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest);
-    }
-
     public class RouteRegistry<TResponse, TRequest> : IRouteRegistry<TResponse, TRequest>
     {
         private readonly IDictionary<string, HandleRequest<TResponse, TRequest>> _registeredRoutes 
@@ -37,10 +25,5 @@ namespace Routing
         {
 
         }
-    }
-
-    public enum HttpMethod
-    {
-
     }
 }
