@@ -8,6 +8,8 @@ namespace Routing.Test
 {
     public class RoutingTest
     {
+        private const string RegisteredRoute = "/registered";
+
         [Fact]
         public void CallsDefaultRouteWhenNoOthersAreRegistered()
         {
@@ -57,7 +59,7 @@ namespace Routing.Test
         {
             AssertRouteWasCalled(routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
             });
         }
 
@@ -72,7 +74,7 @@ namespace Routing.Test
             }
             
             var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, "/foo", HandleRequest);
+            routeRegistry.Register(HttpMethod.Get, RegisteredRoute, HandleRequest);
 
             stateManipulation(routeRegistry);
 
