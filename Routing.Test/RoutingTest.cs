@@ -8,7 +8,7 @@ namespace Routing.Test
         [Fact]
         public void CallsDefaultRouteWhenNoOthersAreRegistered()
         {
-
+            var fallbackWasCalled = false;
         }
     }
 }

@@ -8,6 +8,13 @@ namespace Routing
         private readonly IDictionary<string, HandleRequest<TResponse, TRequest>> _registeredRoutes 
             = new Dictionary<string, HandleRequest<TResponse, TRequest>>();
 
+        private readonly HandleRequest<TResponse, TRequest> _fallbackHandleRequest;
+
+        public RouteRegistry(HandleRequest<TResponse, TRequest> fallbackHandleRequest)
+        {
+            _fallbackHandleRequest = fallbackHandleRequest;
+        }
+
         public TResponse Route(HttpMethod method, string path, TRequest request)
         {
             var segments = path.Split('/');
