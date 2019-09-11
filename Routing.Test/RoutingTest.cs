@@ -11,7 +11,7 @@ namespace Routing.Test
         [Fact]
         public void CallsDefaultRouteWhenNoOthersAreRegistered()
         {
-            TestCallToDefaultRoute(routeRegistry =>
+            AssertCallToDefaultRoute(routeRegistry =>
                     routeRegistry.Route(HttpMethod.Get, "/foo", new Unit()));
         }
 
@@ -19,7 +19,7 @@ namespace Routing.Test
         [Fact]
         public void CallsDefaultRouteWhenOtherRouteIsRegistered()
         {
-            TestCallToDefaultRoute(routeRegistry =>
+            AssertCallToDefaultRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, "/bar", HandleDummyRoute);
                 routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
@@ -29,14 +29,14 @@ namespace Routing.Test
         [Fact]
         public void CallsDefaultRouteWhenOtherMethodIsRegistered()
         {
-            TestCallToDefaultRoute(routeRegistry =>
+            AssertCallToDefaultRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Post, "/foo", HandleDummyRoute);
                 routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
             });
         }
 
-        private static void TestCallToDefaultRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        private static void AssertCallToDefaultRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
         {
             var fallbackWasCalled = false;
 
