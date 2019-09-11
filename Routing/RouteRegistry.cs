@@ -8,11 +8,11 @@ namespace Routing
         private readonly IDictionary<string, HandleRequest<TResponse, TRequest>> _registeredRoutes 
             = new Dictionary<string, HandleRequest<TResponse, TRequest>>();
 
-        private readonly HandleRequest<TResponse, TRequest> _fallbackHandleRequest;
+        private readonly HandleRequest<TResponse, TRequest> _handleFallbackRequest;
 
-        public RouteRegistry(HandleRequest<TResponse, TRequest> fallbackHandleRequest)
+        public RouteRegistry(HandleRequest<TResponse, TRequest> handleFallbackRequest)
         {
-            _fallbackHandleRequest = fallbackHandleRequest;
+            _handleFallbackRequest = handleFallbackRequest;
         }
 
         public TResponse Route(HttpMethod method, string path, TRequest request)
