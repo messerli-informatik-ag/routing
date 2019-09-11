@@ -11,6 +11,6 @@ namespace Routing
 
         void Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest);
 
-        void Remove(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest);
+        void Remove(HttpMethod method, string route);
     }
 }

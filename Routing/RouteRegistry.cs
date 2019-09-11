@@ -28,7 +28,7 @@ namespace Routing
             _registeredRoutes[route] = handleRequest;
         }
 
-        public void Remove(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
+        public void Remove(HttpMethod method, string route)
         {
 
         }

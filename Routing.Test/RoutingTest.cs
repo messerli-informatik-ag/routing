@@ -38,6 +38,18 @@ namespace Routing.Test
             });
         }
 
+        [Fact]
+        public void CallsDefaultRouteWhenRegisteredRouteWasRemoved()
+        {
+            AssertCallToDefaultRoute(routeRegistry =>
+            {
+                const string route = "/foo";
+                routeRegistry.Register(HttpMethod.Post, route, HandleDummyRoute);
+                routeRegistry.Remove(HttpMethod.Post, route);
+                routeRegistry.Route(HttpMethod.Get, route, new Unit());
+            });
+        }
+
         private static void AssertCallToDefaultRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
         {
             var fallbackWasCalled = false;
