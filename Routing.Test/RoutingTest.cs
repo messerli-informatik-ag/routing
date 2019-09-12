@@ -14,6 +14,7 @@ namespace Routing.Test
         private const string RegisteredRouteWithParams = RegisteredRouteWithParam + "/ages/{age}";
 
         private const string RootRoute = "/";
+        private const string RootRouteWithParam = RootRoute + "{name}";
 
         [Fact]
         public void CallsFallbackRouteWhenNoOthersAreRegistered()
@@ -237,7 +238,7 @@ namespace Routing.Test
             AssertRouteWasCalledWithParams(routeRegistry =>
             {
                 routeRegistry.Route(HttpMethod.Get, "/" + param, new Unit());
-            }, new Dictionary<string, string> { { "name", param } }, "/{name}");
+            }, new Dictionary<string, string> { { "name", param } }, RootRouteWithParam);
         }
 
         [Fact]
@@ -306,6 +307,26 @@ namespace Routing.Test
             stateManipulation(routeRegistry);
 
             Assert.True(routeWasCalled);
+        }
+
+        [Fact]
+        public static void ThrowsOnAmbiguousRootRoute()
+        {
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, RootRoute, FailOnRequest);
+
+            Assert.Throws<ArgumentException>(() =>
+                routeRegistry.Register(HttpMethod.Get, RootRouteWithParam, FailOnRequest));
+        }
+
+        [Fact]
+        public static void ThrowsOnAmbiguousSubRoute()
+        {
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest);
+
+            Assert.Throws<ArgumentException>(() =>
+                routeRegistry.Register(HttpMethod.Get, $"{RegisteredRouteWithParam}/ages/12", FailOnRequest));
         }
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
