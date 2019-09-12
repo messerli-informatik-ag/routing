@@ -10,6 +10,9 @@ namespace Routing.Test
     {
         private const string RegisteredRoute = "/registered";
 
+        private const string RegisteredRouteWithParam = RegisteredRoute + "/{name}";
+        private const string RegisteredRouteWithParams = RegisteredRouteWithParam + "/ages/{age}";
+
         private const string RootRoute = "/";
 
         [Fact]
@@ -191,12 +194,108 @@ namespace Routing.Test
                 "/names/{name",
                 "/names/name}",
                 "/names/{name}/",
+                "/names/{;}",
+                "/names/{,}",
+                "/names/{$}",
+                "/names/{!}",
+                "/names/{'}",
+                "/names/{\"}",
                 "/names/{name}/ages/{age",
+                "/names/{name}/{name}",
+                "/names/{name}/ages/{name}",
                 "/names/{name/ages/age}",
                 "/names/{ }",
                 "/names/{}",
                 "/names/{/}",
             };
+        }
+
+        [Fact]
+        public void ParsesRouteParams()
+        {
+            const string param = "foo";
+            AssertRouteWasCalledWithParams(routeRegistry =>
+            {
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit());
+            }, new Dictionary<string, string>{ {"name", param } });
+        }
+
+        [Fact]
+        public void ParsesNumericRouteParams()
+        {
+            const string param = "123";
+            AssertRouteWasCalledWithParams(routeRegistry =>
+            {
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit());
+            }, new Dictionary<string, string>{ { "name", param } });
+        }
+
+        [Fact]
+        public void ParsesMultipleRouteParams()
+        {
+            const string firstParam = "foo";
+            const string secondParam = "22";
+
+            AssertRouteWasCalledWithParams(routeRegistry =>
+            {
+                routeRegistry.Route(HttpMethod.Get, $"{RegisteredRoute}/{firstParam}/ages/{secondParam}", new Unit());
+            }, new Dictionary<string, string> { { "name", firstParam }, { "age", secondParam } }, RegisteredRouteWithParams);
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidParams))]
+        public void CallsFallbackWhenRoutingInvalidRouteParam(string param)
+        {
+            AssertCallToFallbackRoute(routeRegistry =>
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit()));
+        }
+
+        public static TheoryData<string> InvalidParams()
+        {
+            return new TheoryData<string>
+            {
+                "/",
+                "//",
+                "/foo",
+                "foo/",
+                "/foo/",
+                "/foo//",
+                "/foo/bar/",
+                string.Empty,
+                " ",
+                "\t",
+                "\n",
+                "\r",
+                "\r\n",
+                "\b",
+                "😃",
+                "{ }",
+                "{name}",
+                "{}",
+                "{/}",
+            };
+        }
+
+        private static void AssertRouteWasCalledWithParams(
+            Action<IRouteRegistry<Unit, Unit>> stateManipulation,
+            IDictionary<string,string> expectedRouteParams,
+            string registeredRoute = RegisteredRouteWithParam)
+        {
+            var routeWasCalled = false;
+
+            Unit HandleRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                routeWasCalled = true;
+                Assert.Equal(expectedRouteParams, routeParams);
+                return new Unit();
+            }
+
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, registeredRoute, HandleRequest);
+
+            stateManipulation(routeRegistry);
+
+            Assert.True(routeWasCalled);
         }
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
