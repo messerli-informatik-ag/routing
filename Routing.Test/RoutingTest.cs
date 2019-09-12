@@ -125,13 +125,67 @@ namespace Routing.Test
                 return new Unit();
             }
 
-            var subRoute = RegisteredRoute + "/foo";
+            const string subRoute = RegisteredRoute + "/foo";
             var routeRegistry = CreateRouteRegistry();
             routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
             routeRegistry.Register(HttpMethod.Get, subRoute, HandleRequest);
             routeRegistry.Route(HttpMethod.Get, subRoute, new Unit());
 
             Assert.True(routeWasCalled);
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidRoutes))]
+        public void ThrowsWhenRegisteringInvalidRoute(string route)
+        {
+            var routeRegistry = CreateRouteRegistry();
+            Assert.Throws<ArgumentException>(() =>
+                routeRegistry.Register(HttpMethod.Get, route, FailOnRequest));
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidRoutes))]
+        public void CallsFallbackWhenRoutingInvalidRoute(string route)
+        {
+            AssertCallToFallbackRoute(routeRegistry =>
+                routeRegistry.Route(HttpMethod.Get, route, new Unit()));
+        }
+
+        public static TheoryData<string> InvalidRoutes()
+        {
+            return new TheoryData<string>
+            {
+                "//",
+                "foo",
+                "foo/",
+                "/foo/",
+                "/foo//",
+                "/foo/bar/",
+                "/foo//bar",
+                "/foo/bar/",
+                "foo/bar",
+                string.Empty,
+                "/ ",
+                "/\t",
+                "/\n",
+                "/\r",
+                "/\r\n",
+                "/\b",
+                "/😃",
+                "/.",
+                "/..",
+                "/foo;",
+                "/foo,",
+                "/foo=",
+                "/names/{name",
+                "/names/name}",
+                "/names/{name}/",
+                "/names/{name}/ages/{age",
+                "/names/{name/ages/age}",
+                "/names/{ }",
+                "/names/{}",
+                "/names/{/}",
+            };
         }
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
