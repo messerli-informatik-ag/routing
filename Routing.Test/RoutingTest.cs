@@ -23,7 +23,7 @@ namespace Routing.Test
         {
             AssertCallToDefaultRoute(routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Get, "/bar", HandleDummyRoute);
+                routeRegistry.Register(HttpMethod.Get, "/bar", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
             });
         }
@@ -33,7 +33,7 @@ namespace Routing.Test
         {
             AssertCallToDefaultRoute(routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Post, "/foo", HandleDummyRoute);
+                routeRegistry.Register(HttpMethod.Post, "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
             });
         }
@@ -44,9 +44,29 @@ namespace Routing.Test
             AssertCallToDefaultRoute(routeRegistry =>
             {
                 const string route = "/foo";
-                routeRegistry.Register(HttpMethod.Get, route, HandleDummyRoute);
+                routeRegistry.Register(HttpMethod.Get, route, FailOnRequest);
                 routeRegistry.Remove(HttpMethod.Get, route);
                 routeRegistry.Route(HttpMethod.Get, route, new Unit());
+            });
+        }
+
+        [Fact]
+        public void CallsDefaultRouteWhenCallingSubRouteOfRegisteredRoute()
+        {
+            AssertCallToDefaultRoute(routeRegistry =>
+            {
+                routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/foo", new Unit());
+            });
+        }
+
+        [Fact]
+        public void CallsDefaultRouteWhenCallingParentRouteOfRegisteredSubRoute()
+        {
+            AssertCallToDefaultRoute(routeRegistry =>
+            {
+                routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
             });
         }
 
@@ -67,10 +87,11 @@ namespace Routing.Test
         }
 
         [Fact]
-        public void CallsRegisteredRoute()
+        public void CallsRegisteredRouteWhenSubRouteIsRegistered()
         {
             AssertRouteWasCalled(routeRegistry =>
             {
+                routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
             });
         }
@@ -93,9 +114,24 @@ namespace Routing.Test
             Assert.True(routeWasCalled);
         }
 
-        private static Unit HandleDummyRoute(Unit request, IDictionary<string, string> routeParams)
+        [Fact]
+        public void CallsRegisteredSubRouteWhenParentRouteIsRegistered()
         {
-            return new Unit();
+            var routeWasCalled = false;
+
+            Unit HandleRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                routeWasCalled = true;
+                return new Unit();
+            }
+
+            var subRoute = RegisteredRoute + "/foo";
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
+            routeRegistry.Register(HttpMethod.Get, subRoute, HandleRequest);
+            routeRegistry.Route(HttpMethod.Get, subRoute, new Unit());
+
+            Assert.True(routeWasCalled);
         }
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
