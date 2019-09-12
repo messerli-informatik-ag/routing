@@ -11,17 +11,17 @@ namespace Routing.Test
         private const string RegisteredRoute = "/registered";
 
         [Fact]
-        public void CallsDefaultRouteWhenNoOthersAreRegistered()
+        public void CallsFallbackRouteWhenNoOthersAreRegistered()
         {
-            AssertCallToDefaultRoute(routeRegistry =>
+            AssertCallToFallbackRoute(routeRegistry =>
                     routeRegistry.Route(HttpMethod.Get, "/foo", new Unit()));
         }
 
 
         [Fact]
-        public void CallsDefaultRouteWhenOtherRouteIsRegistered()
+        public void CallsFallbackRouteWhenOtherRouteIsRegistered()
         {
-            AssertCallToDefaultRoute(routeRegistry =>
+            AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, "/bar", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
@@ -29,9 +29,9 @@ namespace Routing.Test
         }
 
         [Fact]
-        public void CallsDefaultRouteWhenOtherMethodIsRegistered()
+        public void CallsFallbackRouteWhenOtherMethodIsRegistered()
         {
-            AssertCallToDefaultRoute(routeRegistry =>
+            AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Post, "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
@@ -39,9 +39,9 @@ namespace Routing.Test
         }
 
         [Fact]
-        public void CallsDefaultRouteWhenRegisteredRouteWasRemoved()
+        public void CallsFallbackRouteWhenRegisteredRouteWasRemoved()
         {
-            AssertCallToDefaultRoute(routeRegistry =>
+            AssertCallToFallbackRoute(routeRegistry =>
             {
                 const string route = "/foo";
                 routeRegistry.Register(HttpMethod.Get, route, FailOnRequest);
@@ -51,9 +51,9 @@ namespace Routing.Test
         }
 
         [Fact]
-        public void CallsDefaultRouteWhenCallingSubRouteOfRegisteredRoute()
+        public void CallsFallbackRouteWhenCallingSubRouteOfRegisteredRoute()
         {
-            AssertCallToDefaultRoute(routeRegistry =>
+            AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/foo", new Unit());
@@ -61,16 +61,16 @@ namespace Routing.Test
         }
 
         [Fact]
-        public void CallsDefaultRouteWhenCallingParentRouteOfRegisteredSubRoute()
+        public void CallsFallbackRouteWhenCallingParentRouteOfRegisteredSubRoute()
         {
-            AssertCallToDefaultRoute(routeRegistry =>
+            AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
             });
         }
 
-        private static void AssertCallToDefaultRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        private static void AssertCallToFallbackRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
         {
             var fallbackWasCalled = false;
 
