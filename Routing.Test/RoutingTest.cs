@@ -10,6 +10,8 @@ namespace Routing.Test
     {
         private const string RegisteredRoute = "/registered";
 
+        private const string RootRoute = "/";
+
         [Fact]
         public void CallsFallbackRouteWhenNoOthersAreRegistered()
         {
@@ -96,7 +98,16 @@ namespace Routing.Test
             });
         }
 
-        private static void AssertRouteWasCalled(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        [Fact]
+        public void CallsRegisteredRootRoute()
+        {
+            AssertRouteWasCalled(routeRegistry =>
+            {
+                routeRegistry.Route(HttpMethod.Get, RootRoute, new Unit());
+            }, RootRoute);
+        }
+
+        private static void AssertRouteWasCalled(Action<IRouteRegistry<Unit, Unit>> stateManipulation, string registeredRoute = RegisteredRoute)
         {
             var routeWasCalled = false;
 
@@ -107,7 +118,7 @@ namespace Routing.Test
             }
             
             var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RegisteredRoute, HandleRequest);
+            routeRegistry.Register(HttpMethod.Get, registeredRoute, HandleRequest);
 
             stateManipulation(routeRegistry);
 
