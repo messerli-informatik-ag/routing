@@ -231,6 +231,16 @@ namespace Routing.Test
         }
 
         [Fact]
+        public void ParsesRootRouteParams()
+        {
+            const string param = "foo";
+            AssertRouteWasCalledWithParams(routeRegistry =>
+            {
+                routeRegistry.Route(HttpMethod.Get, "/" + param, new Unit());
+            }, new Dictionary<string, string> { { "name", param } }, "/{name}");
+        }
+
+        [Fact]
         public void ParsesMultipleRouteParams()
         {
             const string firstParam = "foo";
