@@ -253,6 +253,45 @@ namespace Routing.Test
             }, new Dictionary<string, string> { { "name", firstParam }, { "age", secondParam } }, RegisteredRouteWithParams);
         }
 
+        [Fact]
+        public void ParsesNearlyAmbiguousRouteParamsDifferingInPartLength()
+        {
+            var calledRoutes = new[]{false, false, false};
+
+            Unit HandleFirstRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                calledRoutes[0] = true;
+                Assert.Empty(routeParams);
+                return new Unit();
+            }
+
+            Unit HandleSecondRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                calledRoutes[1] = true;
+                Assert.Equal(new Dictionary<string, string> { { "bar", "BAR"} },  routeParams);
+                return new Unit();
+            }
+
+            Unit HandleThirdRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                calledRoutes[2] = true;
+                Assert.Equal(new Dictionary<string, string> { { "foo", "FOO" } }, routeParams);
+                return new Unit();
+            }
+
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry
+                .Register(HttpMethod.Get, "/foo/bar/baz", HandleFirstRequest)
+                .Register(HttpMethod.Get, "/foo/{bar}", HandleSecondRequest)
+                .Register(HttpMethod.Get, "/{foo}", HandleThirdRequest);
+
+            routeRegistry.Route(HttpMethod.Get, "/foo/bar/baz", new Unit());
+            routeRegistry.Route(HttpMethod.Get, "/foo/BAR", new Unit());
+            routeRegistry.Route(HttpMethod.Get, "/FOO", new Unit());
+
+            Assert.All(calledRoutes, Assert.True);
+        }
+
         [Theory]
         [MemberData(nameof(InvalidParams))]
         public void CallsFallbackWhenRoutingInvalidRouteParam(string param)
