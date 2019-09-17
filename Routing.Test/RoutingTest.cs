@@ -96,7 +96,7 @@ namespace Routing.Test
         }
 
         [Fact]
-        public void CallsRegisteredRouteWhenSubRouteIsRegistered()
+        public void CallsParentRoute()
         {
             AssertRouteWasCalled(routeRegistry =>
             {
