@@ -9,8 +9,8 @@ namespace Routing
     {
         TResponse Route(HttpMethod method, string path, TRequest request);
 
-        void Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest);
+        IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest);
 
-        void Remove(HttpMethod method, string route);
+        IRouteRegistry<TResponse, TRequest> Remove(HttpMethod method, string route);
     }
 }
