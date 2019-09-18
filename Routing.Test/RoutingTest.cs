@@ -259,7 +259,7 @@ namespace Routing.Test
         [Fact]
         public void ParsesNearlyAmbiguousRouteParamsDifferingInPartLength()
         {
-            var calledRoutes = new[]{false, false, false};
+            var calledRoutes = new[] { false, false, false };
 
             Unit HandleFirstRequest(Unit request, IDictionary<string, string> routeParams)
             {
