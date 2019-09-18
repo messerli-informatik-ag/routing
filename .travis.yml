@@ -16,8 +16,10 @@ addons:
 
 install:
     - sudo snap alias dotnet-sdk.dotnet dotnet
+    - dotnet tool install -g paket
 
 script:
+    - paket install
     - dotnet restore
     - dotnet build
     - dotnet test
