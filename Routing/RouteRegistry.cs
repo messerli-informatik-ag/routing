@@ -23,14 +23,15 @@ namespace Routing
 
             return _registeredRoutes[path](request, routeParams);
         }
-        public void Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
+        public IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
         {
             _registeredRoutes[route] = handleRequest;
+            return this;
         }
 
-        public void Remove(HttpMethod method, string route)
+        public IRouteRegistry<TResponse, TRequest> Remove(HttpMethod method, string route)
         {
-
+            return this;
         }
     }
 }
