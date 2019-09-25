@@ -33,22 +33,23 @@ namespace Routing
 
         public TResponse Route(HttpMethod method, string path, TRequest request)
         {
+            var noParameters = new Dictionary<string, string>();
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return _handleFallbackRequest(request, noParameters);
+            }
+
             var trimmedRoute = TrimRoute(path);
             var pathSegments = SplitSegments(trimmedRoute)?.ToList();
 
-            if (pathSegments is null || pathSegments.Any(segment => segment is Parameter))
+            if (pathSegments is null)
             {
-                return _handleFallbackRequest(request, new Dictionary<string, string>());
+                return _handleFallbackRequest(request, noParameters);
             }
-
-            var identifiers = pathSegments
-                .Skip(1)
-                .Select(segment => ((Path)segment).Identifier)
-                .ToList();
-
-            var match = _segmentMatcher.Match(_rootSegmentNode, method, identifiers);
+            
+            var match = _segmentMatcher.Match(_rootSegmentNode, method, pathSegments);
             return match is null
-                ? _handleFallbackRequest(request, new Dictionary<string, string>())
+                ? _handleFallbackRequest(request, noParameters)
                 : match.HandleRequest(request, match.Parameters);
         }
 
@@ -116,12 +117,7 @@ namespace Routing
             var startsParameter = segment.StartsWith(ParameterBeginToken.ToString());
             var endsParameter = segment.EndsWith(ParameterEndToken.ToString());
 
-            return (startsParameter, endsParameter) switch
-            {
-                (false, false) => false,
-                (true, true) => true,
-                _ => throw new ArgumentException(nameof(segment))
-            };
+            return startsParameter && endsParameter;
         }
         
         private static bool IsValidSpecifier(string identifier)

@@ -7,7 +7,7 @@ namespace Routing
 {
     internal class SegmentMatcher<TResponse, TRequest>: ISegmentMatcher<TResponse, TRequest>
     { 
-        public Match<TResponse, TRequest>? Match(SegmentNode<TResponse, TRequest> segmentNode, HttpMethod httpMethod, IList<string> segments)
+        public Match<TResponse, TRequest>? Match(SegmentNode<TResponse, TRequest> segmentNode, HttpMethod httpMethod, IList<ISegmentVariant> segments)
         {
             var noParams = new Dictionary<string, string>();
 
@@ -24,9 +24,23 @@ namespace Routing
                     : null;
             }
             var nextSegment = segments.First();
-            if (!SegmentMatching.SegmentMatchesIdentifier(segmentNode.Matcher, nextSegment))
+
+            switch (nextSegment)
             {
-                return null;
+                case Parameter parameter:
+                    return null;
+                case Path path:
+                    if (!SegmentMatching.SegmentMatchesIdentifier(segmentNode.Matcher, path.Identifier))
+                    {
+                        return null;
+                    };
+                    break;
+                case Root root:
+                    if (!(segmentNode.Matcher is Root))
+                    {
+                        return null;
+                    }
+                    break;
             }
 
             if (segments.Count == 1)
@@ -35,7 +49,7 @@ namespace Routing
                 {
                     Root _ => noParams,
                     Path _ => noParams,
-                    Parameter parameter => new Dictionary<string, string> { { parameter.Key, segments.First() } },
+                    Parameter parameter => new Dictionary<string, string> { { parameter.Key, ((Path)segments.First()).Identifier } },
                     _ => throw new NotImplementedException()
                 };
 
