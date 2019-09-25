@@ -1,5 +1,6 @@
 ﻿namespace Routing
 {
+    [Equals]
     internal class Parameter : ISegmentVariant
     {
         internal Parameter(string key)

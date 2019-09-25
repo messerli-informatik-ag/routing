@@ -2,6 +2,7 @@
 
 namespace Routing
 {
+    [Equals]
     internal class Match<TResponse, TRequest>
     {
         internal Match(HandleRequest<TResponse, TRequest> handleRequest, IDictionary<string, string> parameters)

@@ -3,6 +3,7 @@ using System.Net.Http;
 
 namespace Routing
 {
+    [Equals]
     internal class SegmentNode<TResponse, TRequest>
     {
         public SegmentNode(ISegmentVariant matcher)

@@ -9,6 +9,7 @@ namespace Routing
             {
                 Path { Identifier: var path } => path == identifier,
                 Parameter _ => true,
+                Root _ => false,
                 _ => throw new InvalidOperationException($"Type {segment.GetType()} is not handled")
             };
     }

@@ -159,7 +159,7 @@ namespace Routing
                 .LiteralChildren
                 .Prepend(_rootSegmentNode)
                 .Concat(_rootSegmentNode.ParameterChildren)
-                .FirstOrDefault(child => child.Matcher == head);
+                .FirstOrDefault(child => child.Matcher.Equals(head));
 
             if (matchingChild is null)
             {
