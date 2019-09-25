@@ -9,8 +9,9 @@ namespace Routing
 {
     public class RouteRegistry<TResponse, TRequest> : IRouteRegistry<TResponse, TRequest>
     {
-        private readonly IDictionary<int, SortedDictionary<Segments, HandleRequest<TResponse, TRequest>>> _registeredRoutes
-            = new Dictionary<int, SortedDictionary<Segments, HandleRequest<TResponse, TRequest>>>();
+        private readonly ISegmentMatcher<TResponse, TRequest> _segmentMatcher = new SegmentMatcher<TResponse, TRequest>();
+
+        private readonly SegmentNode<TResponse, TRequest> _rootSegmentNode = new SegmentNode<TResponse, TRequest>(new Root());
 
         private readonly HandleRequest<TResponse, TRequest> _handleFallbackRequest;
 
@@ -41,29 +42,14 @@ namespace Routing
             }
 
             var identifiers = pathSegments
+                .Skip(1)
                 .Select(segment => ((Path)segment).Identifier)
                 .ToList();
 
-            var bucket = _registeredRoutes[pathSegments.Count];
-            foreach (var (matchingSegments, requestHandler) in bucket)
-            {
-                var matchersAndValues = matchingSegments
-                    .Zip(identifiers, (matcher, value) => new { Matcher = matcher, Value = value})
-                    .ToList();
-                if (matchersAndValues.All(matcherAndValue => SegmentMatchesIdentifier(matcherAndValue.Matcher, matcherAndValue.Value)))
-                {
-                    var parameters = matchersAndValues
-                        .SelectMany(matcherAndValue => matcherAndValue.Matcher switch
-                    {
-                        Parameter { Key: var key} => new[] {( key, matcherAndValue.Value) },
-                        Path _ => new (string, string)[0],
-                        _ => throw new InvalidOperationException($"Type {matcherAndValue.Matcher.GetType()} is not handled")
-                    })
-                        .ToDictionary(keyValuePair => keyValuePair.Item1, keyValuePair => keyValuePair.Item2);
-                    return requestHandler(request, parameters);
-                }
-            }
-            return _handleFallbackRequest(request, new Dictionary<string, string>());
+            var match = _segmentMatcher.Match(_rootSegmentNode, method, identifiers);
+            return match is null
+                ? _handleFallbackRequest(request, new Dictionary<string, string>())
+                : match.HandleRequest(request, match.Parameters);
         }
 
         public IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
@@ -74,12 +60,9 @@ namespace Routing
             {
                 throw new ArgumentException(nameof(route));
             }
-
-            if (!_registeredRoutes.ContainsKey(segments.Count))
-            {
-                _registeredRoutes[segments.Count] = new SortedDictionary<Segments, HandleRequest<TResponse, TRequest>>(new SegmentComparer());
-            }
-            _registeredRoutes[segments.Count].Add(segments, handleRequest);
+            
+            AddChildSegmentMatchers(segments, method, handleRequest);
+            
             return this;
         }
 
@@ -95,9 +78,15 @@ namespace Routing
 
         private static Segments? SplitSegments(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return new[] { new Root() };
+            }
+
             var segments = path
                 .Split(SegmentDelimiterToken)
                 .Select(ParseSegment)
+                .Prepend(new Root())
                 .ToList();
             return segments.All(segment => segment is { })
                 ? segments.Select(segment => segment!)
@@ -106,18 +95,19 @@ namespace Routing
 
         private static ISegmentVariant? ParseSegment(string segment)
         {
-            if (IsParameter(segment))
+            if (!IsParameter(segment))
             {
-                const int keyDelimiterTokenCount = 2;
-                var keyLength = segment.Length - keyDelimiterTokenCount;
-                var parameterKey = segment.Substring(startIndex: 1, length: keyLength);
-                return IsValidSpecifier(parameterKey)
-                    ? new Parameter(parameterKey)
+                return IsValidSpecifier(segment)
+                    ? new Path(segment)
                     : null;
             }
 
-            return IsValidSpecifier(segment)
-                ? new Path(segment)
+            const int keyDelimiterTokenCount = 2;
+            var keyLength = segment.Length - keyDelimiterTokenCount;
+            var parameterKey = segment.Substring(startIndex: 1, length: keyLength);
+
+            return IsValidSpecifier(parameterKey)
+                ? new Parameter(parameterKey)
                 : null;
         }
 
@@ -140,50 +130,79 @@ namespace Routing
                      && !InvalidIdentifiers.Any(identifier.Contains)
                      && identifier.All(char.IsLetterOrDigit);
         }
-
-        private static bool SegmentMatchesIdentifier(ISegmentVariant segment, string identifier) =>
-            segment switch
-            {
-                Path {Identifier: var path} => path == identifier,
-                Parameter _ => true,
-                _ => throw new InvalidOperationException($"Type {segment.GetType()} is not handled")
-            };
-    }
-
-    internal class SegmentComparer : IComparer<Segments>
-    {
-        public int Compare(Segments left, Segments right)
+        
+        private void AddChildSegmentMatchers(ICollection<ISegmentVariant> segments, HttpMethod method, HandleRequest<TResponse, TRequest> handleRequest)
         {
-            var leftSpecificity = AssignSpecificity(left);
-            var rightSpecificity = AssignSpecificity(right);
-
-            if (leftSpecificity == rightSpecificity)
+            if (!segments.Any())
             {
-                return 0;
+                return;
             }
 
-            if (leftSpecificity < rightSpecificity)
-            {
-                return -1;
-            }
-
-            return 1;
+            AddChildSegmentNodes(_rootSegmentNode, segments, method, handleRequest);
         }
 
-        private static int AssignSpecificity(Segments segments)
+        private void AddChildSegmentNodes(SegmentNode<TResponse, TRequest> node, ICollection<ISegmentVariant> segments,
+            HttpMethod method, HandleRequest<TResponse, TRequest> handleRequest)
         {
-            var bytes = segments.Select(segment => segment switch
+            if (segments.Count == 1)
             {
-                Parameter _ => (byte)0,
-                Path _ => (byte)1,
-                _ => throw new InvalidOperationException($"Type {segment.GetType()} is not handled")
-            });
+                var child = CreateNode(segments, method, handleRequest);
+                AddChildNode(node, child);
+                return;
+            }
 
-            var bytesInCorrectOrder = BitConverter.IsLittleEndian
-                ? bytes.Reverse()
-                : bytes;
+            var head = segments.First();
+            var tail = segments.Skip(1).ToList();
 
-            return BitConverter.ToInt32(bytesInCorrectOrder.ToArray());
+            var matchingChild =
+                _rootSegmentNode
+                .LiteralChildren
+                .Prepend(_rootSegmentNode)
+                .Concat(_rootSegmentNode.ParameterChildren)
+                .FirstOrDefault(child => child.Matcher == head);
+
+            if (matchingChild is null)
+            {
+                var child = CreateNode(segments, method, handleRequest);
+                AddChildNode(node, child);
+            }
+            else
+            {
+                AddChildSegmentNodes(matchingChild, tail, method, handleRequest);
+            }
+        }
+
+        private static void AddChildNode(SegmentNode<TResponse, TRequest> parent, SegmentNode<TResponse, TRequest> child)
+        {
+            var collection = child.Matcher switch
+            {
+                Path _ => parent.LiteralChildren,
+                Parameter _ => parent.ParameterChildren,
+                Root _ => throw new InvalidOperationException(),
+                _ => throw new NotImplementedException()
+            };
+
+            collection.Add(child);
+        }
+
+        private SegmentNode<TResponse, TRequest> CreateNode(ICollection<ISegmentVariant> segments,
+            HttpMethod method, HandleRequest<TResponse, TRequest> handleRequest)
+        {
+            var head = segments.First();
+            var node = new SegmentNode<TResponse, TRequest>(head);
+
+            if (segments.Count == 1)
+            {
+                node.HandleRequestFunctions[method] = handleRequest;
+                return node;
+            }
+            
+            var tail = segments.Skip(1).ToList();
+
+            var child = CreateNode(tail, method, handleRequest);
+            AddChildNode(node, child);
+
+            return node;
         }
     }
 }
