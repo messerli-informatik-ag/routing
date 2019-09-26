@@ -177,6 +177,7 @@ namespace Routing.Test
                 "foo",
                 "foo/",
                 "/foo/",
+                "//foo",
                 "/foo//",
                 "/foo/bar/",
                 "/foo//bar",

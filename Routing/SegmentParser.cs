@@ -18,7 +18,8 @@ namespace Routing
                 return null;
             }
 
-            var segments = ParseSegments(route);
+            var trimmedRoute = route.Substring(1);
+            var segments = ParseSegments(trimmedRoute);
 
             return segments.All(segment => segment is { })
                 ? segments.Select(segment => segment!)
