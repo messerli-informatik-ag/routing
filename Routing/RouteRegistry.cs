@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using Routing.Parsing;
 using Routing.SegmentVariant;
 using Segments = System.Collections.Generic.IEnumerable<Routing.SegmentVariant.ISegmentVariant>;
 
@@ -17,6 +18,7 @@ namespace Routing
         private readonly Func<TRequest, TResponse> _handleFallbackRequest;
 
         private readonly ISegmentParser _segmentParser = new SegmentParser();
+        private readonly IPathParser _pathParser = new PathParser();
 
         public RouteRegistry(Func<TRequest, TResponse> handleFallbackRequest)
         {
@@ -25,6 +27,12 @@ namespace Routing
 
         public TResponse Route(HttpMethod method, string path, TRequest request)
         {
+            var segments = _pathParser.Parse(path);
+            if (segments is null)
+            {
+                return _handleFallbackRequest(request);
+            }
+            // Todo
             return _handleFallbackRequest(request);
         }
 

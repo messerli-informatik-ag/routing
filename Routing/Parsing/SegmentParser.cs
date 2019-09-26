@@ -1,46 +1,41 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Routing.SegmentVariant;
+using static Routing.Parsing.PathParsing;
 
-namespace Routing
+namespace Routing.Parsing
 {
     internal class SegmentParser : ISegmentParser
     {
-
         private const char ParameterBeginToken = '{';
         private const char ParameterEndToken = '}';
-        private const char SegmentDelimiterToken = '/';
+
+        private static IEnumerable<char> ValidSeparators => new[]
+        {
+            '-',
+            '_',
+            '.',
+        };
 
         public IEnumerable<ISegmentVariant>? Parse(string route)
         {
-            if (!IsRouteValid(route))
+            var segments = ParseSegments(route);
+            if (segments is null)
             {
                 return null;
             }
-
-            var trimmedRoute = route.Substring(1);
-            var segments = ParseSegments(trimmedRoute);
 
             return segments.All(segment => segment is { })
                 ? segments.Select(segment => segment!)
                 : null;
         }
 
-        private static List<ISegmentVariant?> ParseSegments(string route)
+        private static ICollection<ISegmentVariant?>? ParseSegments(string route)
         {
-            return route
-                .Split(SegmentDelimiterToken)
+            return SplitSegments(route)?
                 .Select(ParseSegment)
                 .Prepend(new Root())
                 .ToList();
-        }
-
-        private static bool IsRouteValid(string route)
-        {
-            bool IsEmpty() => string.IsNullOrEmpty(route);
-            bool StartsWithRoot() => route.First() == SegmentDelimiterToken;
-
-            return !IsEmpty() && StartsWithRoot();
         }
 
         private static ISegmentVariant? ParseSegment(string segment)
@@ -83,12 +78,5 @@ namespace Routing
 
             return !IsEmpty() && ContainsValidCharacters();
         }
-
-        private static IEnumerable<char> ValidSeparators => new[]
-        {
-            '-',
-            '_',
-            '.',
-        };
     }
 }
