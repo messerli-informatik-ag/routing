@@ -1,4 +1,4 @@
-﻿namespace Routing
+﻿namespace Routing.SegmentVariant
 {
     [Equals]
     internal class Parameter : ISegmentVariant

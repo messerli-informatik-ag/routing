@@ -1,9 +1,9 @@
-﻿namespace Routing
+﻿namespace Routing.SegmentVariant
 {
     [Equals]
-    internal class Path : ISegmentVariant
+    internal class Literal : ISegmentVariant
     {
-        internal Path(string identifier)
+        internal Literal(string identifier)
         {
             Identifier = identifier;
         }

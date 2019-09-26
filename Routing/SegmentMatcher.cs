@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using Routing.SegmentVariant;
 
 namespace Routing
 {
@@ -29,7 +30,7 @@ namespace Routing
             {
                 case Parameter parameter:
                     return null;
-                case Path path:
+                case Literal path:
                     if (!SegmentMatching.SegmentMatchesIdentifier(segmentNode.Matcher, path.Identifier))
                     {
                         return null;
@@ -48,8 +49,8 @@ namespace Routing
                 var parameters = segmentNode.Matcher switch
                 {
                     Root _ => noParams,
-                    Path _ => noParams,
-                    Parameter parameter => new Dictionary<string, string> { { parameter.Key, ((Path)segments.First()).Identifier } },
+                    Literal _ => noParams,
+                    Parameter parameter => new Dictionary<string, string> { { parameter.Key, ((Literal)segments.First()).Identifier } },
                     _ => throw new NotImplementedException()
                 };
 

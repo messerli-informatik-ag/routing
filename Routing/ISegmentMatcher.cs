@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using Routing.SegmentVariant;
 
 namespace Routing
 {

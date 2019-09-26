@@ -1,4 +1,5 @@
 ﻿using System;
+using Routing.SegmentVariant;
 
 namespace Routing
 {
@@ -7,7 +8,7 @@ namespace Routing
         internal static bool SegmentMatchesIdentifier(ISegmentVariant segment, string identifier) =>
             segment switch
             {
-                Path { Identifier: var path } => path == identifier,
+                Literal { Identifier: var path } => path == identifier,
                 Parameter _ => true,
                 Root _ => false,
                 _ => throw new InvalidOperationException($"Type {segment.GetType()} is not handled")
