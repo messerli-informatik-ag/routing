@@ -16,6 +16,8 @@ namespace Routing
 
         private readonly Func<TRequest, TResponse> _handleFallbackRequest;
 
+        private readonly ISegmentParser _segmentParser = new SegmentParser();
+
         public RouteRegistry(Func<TRequest, TResponse> handleFallbackRequest)
         {
             _handleFallbackRequest = handleFallbackRequest;
@@ -28,92 +30,38 @@ namespace Routing
 
         public IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
         {
+            var segments = _segmentParser.Parse(route)
+                           ?? throw new ArgumentException($"Invalid route: {route}", nameof(route));
+            var targetNode = segments
+                .Aggregate(_segmentTree, (node, segment) =>
+                    segment switch
+                    {
+                        Root _ => node,
+                        Literal literal => FindOrInsertNode(node.LiteralChildren, literal),
+                        Parameter parameter => FindOrInsertNode(node.ParameterChildren, parameter),
+                        _ => throw new InvalidOperationException()
+                    }
+                );
+            targetNode.HandleRequestFunctions[method] = handleRequest;
+
             return this;
+        }
+
+        private static SegmentNode<TResponse, TRequest> FindOrInsertNode(ICollection<SegmentNode<TResponse, TRequest>> collection, ISegmentVariant segment)
+        {
+            var existingNode = collection.FirstOrDefault(element => element.Matcher.Equals(segment));
+            return existingNode ?? InsertNode(collection, segment);
+        }
+        private static SegmentNode<TResponse, TRequest> InsertNode(ICollection<SegmentNode<TResponse, TRequest>> collection, ISegmentVariant segment)
+        {
+            var newNode = new SegmentNode<TResponse, TRequest>(segment);
+            collection.Add(newNode);
+            return newNode;
         }
 
         public IRouteRegistry<TResponse, TRequest> Remove(HttpMethod method, string route)
         {
             return this;
-        }
-
-        private static string TrimRoute(string route)
-        {
-            return route.Substring(1);
-        }
-
-        
-        private void AddChildSegmentMatchers(ICollection<ISegmentVariant> segments, HttpMethod method, HandleRequest<TResponse, TRequest> handleRequest)
-        {
-            if (!segments.Any())
-            {
-                return;
-            }
-
-            AddChildSegmentNodes(_segmentTree, segments, method, handleRequest);
-        }
-
-        private void AddChildSegmentNodes(SegmentNode<TResponse, TRequest> node, ICollection<ISegmentVariant> segments,
-            HttpMethod method, HandleRequest<TResponse, TRequest> handleRequest)
-        {
-            if (segments.Count == 1)
-            {
-                var child = CreateNode(segments, method, handleRequest);
-                AddChildNode(node, child);
-                return;
-            }
-
-            var head = segments.First();
-            var tail = segments.Skip(1).ToList();
-
-            var matchingChild =
-                _segmentTree
-                .LiteralChildren
-                .Prepend(_segmentTree)
-                .Concat(_segmentTree.ParameterChildren)
-                .FirstOrDefault(child => child.Matcher.Equals(head));
-
-            if (matchingChild is null)
-            {
-                var child = CreateNode(segments, method, handleRequest);
-                AddChildNode(node, child);
-            }
-            else
-            {
-                AddChildSegmentNodes(matchingChild, tail, method, handleRequest);
-            }
-        }
-
-        private static void AddChildNode(SegmentNode<TResponse, TRequest> parent, SegmentNode<TResponse, TRequest> child)
-        {
-            var collection = child.Matcher switch
-            {
-                Literal _ => parent.LiteralChildren,
-                Parameter _ => parent.ParameterChildren,
-                Root _ => throw new InvalidOperationException(),
-                _ => throw new NotImplementedException()
-            };
-
-            collection.Add(child);
-        }
-
-        private SegmentNode<TResponse, TRequest> CreateNode(ICollection<ISegmentVariant> segments,
-            HttpMethod method, HandleRequest<TResponse, TRequest> handleRequest)
-        {
-            var head = segments.First();
-            var node = new SegmentNode<TResponse, TRequest>(head);
-
-            if (segments.Count == 1)
-            {
-                node.HandleRequestFunctions[method] = handleRequest;
-                return node;
-            }
-            
-            var tail = segments.Skip(1).ToList();
-
-            var child = CreateNode(tail, method, handleRequest);
-            AddChildNode(node, child);
-
-            return node;
         }
     }
 }

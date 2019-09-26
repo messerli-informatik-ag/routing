@@ -83,7 +83,7 @@ namespace Routing.Test
         {
             var fallbackWasCalled = false;
 
-            Unit HandleFallbackRequest(Unit request, IDictionary<string, string> routeParams)
+            Unit HandleFallbackRequest(Unit request)
             {
                 fallbackWasCalled = true;
                 return new Unit();
@@ -373,12 +373,17 @@ namespace Routing.Test
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
         {
-            return new RouteRegistry<Unit, Unit>(FailOnRequest);
+            return new RouteRegistry<Unit, Unit>(FailOnFallbackRequest);
+        }
+
+        private static Unit FailOnFallbackRequest(Unit request)
+        {
+            throw new InvalidOperationException("Fallback request handler was unexpectedly called");
         }
 
         private static Unit FailOnRequest(Unit request, IDictionary<string, string> routeParams)
         {
-            throw new InvalidOperationException("Fallback request handler was unexpectedly called");
+            throw new InvalidOperationException("Request handler was unexpectedly called");
         }
 
         private static Dictionary<string, string> CreateExpectedParams(params (string, string)[] keyValuePairs)
