@@ -115,10 +115,15 @@ namespace Routing
             return segment switch
             {
                 Root _ => node,
-                Literal literal => node?.LiteralChildren.FirstOrDefault(element => element.Matcher.Equals(literal)),
-                Parameter parameter => node?.ParameterChildren.FirstOrDefault(element => element.Matcher.Equals(parameter)),
+                Literal literal => FindSegmentInNodeList(node?.LiteralChildren, literal),
+                Parameter parameter => FindSegmentInNodeList(node?.ParameterChildren, parameter),
                 _ => throw new InvalidOperationException()
             };
+        }
+
+        private static SegmentNode<TResponse, TRequest>? FindSegmentInNodeList(IEnumerable<SegmentNode<TResponse, TRequest>>? node, ISegmentVariant segment)
+        {
+            return node?.FirstOrDefault(element => element.Matcher.Equals(segment));
         }
     }
 }
