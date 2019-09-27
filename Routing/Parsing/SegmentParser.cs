@@ -73,10 +73,14 @@ namespace Routing.Parsing
         private static bool IsValidSpecifier(string identifier)
         {
             bool IsEmpty() => string.IsNullOrEmpty(identifier);
-            bool IsValidCharacter(char character) => char.IsLetterOrDigit(character) || ValidSeparators.Contains(character);
             bool ContainsValidCharacters() => identifier.All(IsValidCharacter);
+            bool ContainsOnlySeparators() => identifier.All(IsValidSeparator);
 
-            return !IsEmpty() && ContainsValidCharacters();
+            return !IsEmpty() && ContainsValidCharacters() && !ContainsOnlySeparators();
         }
+
+        private static bool IsValidCharacter(char character) => char.IsLetterOrDigit(character) || IsValidSeparator(character);
+
+        private static bool IsValidSeparator(char separator) => ValidSeparators.Contains(separator);
     }
 }
