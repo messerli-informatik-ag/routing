@@ -4,13 +4,11 @@ using System.Linq;
 using System.Net.Http;
 using Routing.Parsing;
 using Routing.SegmentVariant;
-using Segments = System.Collections.Generic.IEnumerable<Routing.SegmentVariant.ISegmentVariant>;
 
 namespace Routing
 {
     public class RouteRegistry<TResponse, TRequest> : IRouteRegistry<TResponse, TRequest>
     {
-        private readonly ISegmentMatcher<TResponse, TRequest> _segmentMatcher = new SegmentMatcher<TResponse, TRequest>();
 
         private readonly SegmentNode<TResponse, TRequest> _segmentTree
             = new SegmentNode<TResponse, TRequest>(new Root());
