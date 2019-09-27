@@ -257,6 +257,31 @@ namespace Routing.Test
             }, CreateExpectedParams((NameKey, firstParam), (AgeKey, secondParam)), RegisteredRouteWithParams);
         }
 
+
+        [Fact]
+        public static void RoutesParameterRouteWhenLiteralRootIsAvailable()
+        {
+            const string name = "foo";
+            AssertRouteWasCalledWithParams(routeRegistry =>
+            {
+                routeRegistry
+                    .Register(HttpMethod.Get, RootRoute, FailOnRequest)
+                    .Route(HttpMethod.Get, $"/{name}", new Unit());
+            }, CreateExpectedParams((NameKey, name)), RootRouteWithParam);
+        }
+
+        [Fact]
+        public static void RoutesMoreSpecificSubRoute()
+        {
+            var specificRoute = $"{RegisteredRouteWithParam}/ages/12";
+            AssertRouteWasCalled(routeRegistry =>
+            {
+                routeRegistry
+                    .Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest)
+                    .Route(HttpMethod.Get, specificRoute, new Unit());
+            }, specificRoute);
+        }
+
         [Fact]
         public void ParsesNearlyAmbiguousRouteParamsDifferingInPartLength()
         {
@@ -350,26 +375,6 @@ namespace Routing.Test
             stateManipulation(routeRegistry);
 
             Assert.True(routeWasCalled);
-        }
-
-        [Fact]
-        public static void ThrowsOnAmbiguousRootRoute()
-        {
-            var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RootRoute, FailOnRequest);
-
-            Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, RootRouteWithParam, FailOnRequest));
-        }
-
-        [Fact]
-        public static void ThrowsOnAmbiguousSubRoute()
-        {
-            var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest);
-
-            Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, $"{RegisteredRouteWithParam}/ages/12", FailOnRequest));
         }
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
