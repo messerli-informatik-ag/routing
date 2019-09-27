@@ -51,11 +51,9 @@ namespace Routing
                 ? AddToDictionary(parameters, (key, head))
                 : parameters;
 
-            switch (node.Matcher)
+            if (!NodeMatchesSegment(node, head))
             {
-                case Literal { Identifier: var matchingSegment } when head != matchingSegment:
-                case Root _ when head != "/":
-                    return null;
+                return null;
             }
 
             if (segments.Count == 1)
@@ -72,6 +70,9 @@ namespace Routing
                        .Select(child => Match(child, method, tail, currentParameters))
                        .FirstOrDefault(child => child != null);
         }
+
+        private static bool NodeMatchesSegment(SegmentNode<TResponse, TRequest> node, string segment) =>
+            !(node.Matcher is Literal { Identifier: var matchingSegment } && segment != matchingSegment);
 
         private static IDictionary<TKey, TValue> AddToDictionary<TKey, TValue>(IDictionary<TKey, TValue> dictionary, (TKey, TValue) keyValuePair)
         {
@@ -91,13 +92,6 @@ namespace Routing
                 Root _ => false,
                 _ => throw new InvalidOperationException($"Type {segment.GetType()} is not handled")
             };
-
-        private static string? ExtractKey(ISegmentVariant segment)
-        {
-            return segment is Parameter { Key: var key }
-                ? key
-                : null;
-        }
 
         public IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
         {
