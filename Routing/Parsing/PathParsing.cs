@@ -16,7 +16,9 @@ namespace Routing.Parsing
 
             const int lengthOfRoot = 1;
             var trimmedPath = path.Substring(lengthOfRoot);
-            return trimmedPath.Split(SegmentDelimiterToken);
+            return trimmedPath.Any()
+                ? trimmedPath.Split(SegmentDelimiterToken)
+                : new string[0];
         }
         private static bool IsPathBroadlyValid(string path)
         {
