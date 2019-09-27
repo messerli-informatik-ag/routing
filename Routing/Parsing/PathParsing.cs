@@ -20,6 +20,7 @@ namespace Routing.Parsing
                 ? trimmedPath.Split(SegmentDelimiterToken)
                 : new string[0];
         }
+
         private static bool IsPathBroadlyValid(string path)
         {
             bool IsEmpty() => string.IsNullOrEmpty(path);
