@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Routing.SegmentVariant;
 using static Routing.Parsing.PathParsing;
@@ -25,9 +26,14 @@ namespace Routing.Parsing
                 return null;
             }
 
-            return segments.All(segment => segment is { })
-                ? segments.Select(segment => segment!)
-                : null;
+            if (segments.All(segment => segment is { }))
+            {
+                var nonNullSegments = (ICollection<ISegmentVariant>) segments;
+                CheckForDuplicatedParameters(nonNullSegments);
+                return nonNullSegments;
+            }
+
+            return null;
         }
 
         private static ICollection<ISegmentVariant?>? ParseSegments(string route)
@@ -36,6 +42,24 @@ namespace Routing.Parsing
                 .Select(ParseSegment)
                 .Prepend(new Root())
                 .ToList();
+        }
+
+        private static void CheckForDuplicatedParameters(IEnumerable<ISegmentVariant> segments)
+        {
+            var duplicatedParameters = FindDuplicatedParameters(segments).ToList();
+            if (duplicatedParameters.Any())
+            {
+                throw new ArgumentException($"Duplicated parameters are not allowed in route: {string.Join(", ", duplicatedParameters)}");
+            }
+        }
+
+        private static IEnumerable<string> FindDuplicatedParameters(IEnumerable<ISegmentVariant> segments)
+        {
+            return segments
+                .OfType<Parameter>()
+                .GroupBy(param => param.Key)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.First().Key);
         }
 
         private static ISegmentVariant? ParseSegment(string segment)
