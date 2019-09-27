@@ -13,7 +13,7 @@ namespace Routing.Parsing
         /// pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
         /// unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
         /// pct-encoded = "%" HEXDIG HEXDIG
-        /// sub-delims  = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+        /// sub-delims  = "!" / "$" / "&amp;" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
         /// </code>
         /// </summary>
         private static IEnumerable<char> ValidCharacters => new[]
