@@ -27,13 +27,76 @@ namespace Routing
 
         public TResponse Route(HttpMethod method, string path, TRequest request)
         {
-            var segments = _pathParser.Parse(path);
+            var segments = _pathParser.Parse(path)?.ToList();
             if (segments is null)
             {
                 return _handleFallbackRequest(request);
             }
-            // Todo
-            return _handleFallbackRequest(request);
+
+            var requestHandlingData = Match(_segmentTree, method, segments, new Dictionary<string, string>());
+            return requestHandlingData is null
+                ? _handleFallbackRequest(request)
+                : requestHandlingData.HandleRequest(request, requestHandlingData.Parameters);
+        }
+
+        private static RequestHandlingData?
+            Match(SegmentNode<TResponse, TRequest> node,
+                HttpMethod method,
+                ICollection<string> segments,
+                IDictionary<string, string> parameters)
+        {
+            var head = segments.First();
+
+            var currentParameters = node.Matcher is Parameter { Key: var key }
+                ? AddToDictionary(parameters, (key, head))
+                : parameters;
+
+            switch (node.Matcher)
+            {
+                case Literal { Identifier: var matchingSegment } when head != matchingSegment:
+                case Root _ when head != "/":
+                    return null;
+            }
+
+            if (segments.Count == 1)
+            {
+                return node.HandleRequestFunctions.TryGetValue(method, out var handleRequest)
+                    ? new RequestHandlingData(handleRequest, currentParameters)
+                    : null;
+            }
+
+            var tail = segments.Skip(1).ToList();
+
+            return node.LiteralChildren
+                       .Concat(node.ParameterChildren)
+                       .Select(child => Match(child, method, tail, currentParameters))
+                       .FirstOrDefault(child => child != null);
+        }
+
+        private static IDictionary<TKey, TValue> AddToDictionary<TKey, TValue>(IDictionary<TKey, TValue> dictionary, (TKey, TValue) keyValuePair)
+        {
+            var (key, value) = keyValuePair;
+            return new Dictionary<TKey, TValue>(dictionary)
+            {
+                [key] = value
+            };
+        }
+
+
+        private static bool SegmentMatchesIdentifier(ISegmentVariant segment, string identifier) =>
+            segment switch
+            {
+                Literal { Identifier: var path } => path == identifier,
+                Parameter _ => true,
+                Root _ => false,
+                _ => throw new InvalidOperationException($"Type {segment.GetType()} is not handled")
+            };
+
+        private static string? ExtractKey(ISegmentVariant segment)
+        {
+            return segment is Parameter { Key: var key}
+                ? key
+                : null;
         }
 
         public IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
@@ -70,6 +133,19 @@ namespace Routing
         public IRouteRegistry<TResponse, TRequest> Remove(HttpMethod method, string route)
         {
             return this;
+        }
+
+        private class RequestHandlingData
+        {
+            public RequestHandlingData(HandleRequest<TResponse, TRequest> handleRequest, IDictionary<string, string> parameters)
+            {
+                HandleRequest = handleRequest;
+                Parameters = parameters;
+            }
+
+            public HandleRequest<TResponse, TRequest> HandleRequest { get; }
+
+            public IDictionary<string, string> Parameters { get; }
         }
     }
 }
