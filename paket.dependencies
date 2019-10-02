@@ -7,3 +7,7 @@ nuget xunit ~> 2.4.0
 nuget xunit.runner.visualstudio ~> 2.4.0
 nuget Equals.Fody ~> 1.9.5
 nuget Fody ~> 4.0
+
+nuget Microsoft.AspNetCore.Http.Abstractions ~> 2.2.0
+nuget Microsoft.Extensions.Caching.Abstractions ~> 2.2.0
+nuget Microsoft.Extensions.Logging.Abstractions ~> 2.2.0
