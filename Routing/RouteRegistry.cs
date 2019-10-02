@@ -9,7 +9,6 @@ namespace Routing
 {
     public class RouteRegistry<TResponse, TRequest> : IRouteRegistry<TResponse, TRequest>
     {
-
         private readonly SegmentNode<TResponse, TRequest> _segmentTree
             = new SegmentNode<TResponse, TRequest>(new Root());
 

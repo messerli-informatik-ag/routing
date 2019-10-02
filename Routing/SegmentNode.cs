@@ -17,10 +17,10 @@ namespace Routing
         public IDictionary<HttpMethod, HandleRequest<TResponse, TRequest>> HandleRequestFunctions { get; }
             = new Dictionary<HttpMethod, HandleRequest<TResponse, TRequest>>();
 
-        public ISet<SegmentNode<TResponse, TRequest>> LiteralChildren { get; }
-            = new HashSet<SegmentNode<TResponse, TRequest>>();
+        public ICollection<SegmentNode<TResponse, TRequest>> LiteralChildren { get; }
+            = new OrderedSet<SegmentNode<TResponse, TRequest>>();
 
-        public ISet<SegmentNode<TResponse, TRequest>> ParameterChildren { get; }
-            = new HashSet<SegmentNode<TResponse, TRequest>>();
+        public ICollection<SegmentNode<TResponse, TRequest>> ParameterChildren { get; }
+            = new OrderedSet<SegmentNode<TResponse, TRequest>>();
     }
 }
