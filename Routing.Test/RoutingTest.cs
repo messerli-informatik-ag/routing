@@ -257,7 +257,6 @@ namespace Routing.Test
             }, CreateExpectedParams((NameKey, firstParam), (AgeKey, secondParam)), RegisteredRouteWithParams);
         }
 
-
         [Fact]
         public static void RoutesParameterRouteWhenLiteralRootIsAvailable()
         {
@@ -271,15 +270,31 @@ namespace Routing.Test
         }
 
         [Fact]
-        public static void RoutesMoreSpecificSubRoute()
+        public static void LiteralsArePreferredFromLeftToRight()
         {
-            var specificRoute = $"{RegisteredRouteWithParam}/ages/12";
-            AssertRouteWasCalled(routeRegistry =>
+            var expectedRoute = $"{RegisteredRoute}/foo/{{bar}}/{{baz}}";
+            var moreLiteralRoute = $"{RegisteredRoute}/{{foo}}/bar/baz";
+
+            AssertRouteWasCalledWithParams(routeRegistry =>
             {
                 routeRegistry
-                    .Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest)
-                    .Route(HttpMethod.Get, specificRoute, new Unit());
-            }, specificRoute);
+                    .Register(HttpMethod.Get, moreLiteralRoute, FailOnRequest)
+                    .Route(HttpMethod.Get, $"{RegisteredRoute}/foo/bar/baz", new Unit());
+            }, CreateExpectedParams(("bar", "bar"), ("baz", "baz")), expectedRoute);
+        }
+
+        [Fact]
+        public static void FirstRegisteredAmbiguousRouteIsPreferred()
+        {
+            const string name = "foo";
+            var ambiguousRoute = $"{RegisteredRoute}/{{bar}}";
+
+            AssertRouteWasCalledWithParams(routeRegistry =>
+            {
+                routeRegistry
+                    .Register(HttpMethod.Get, ambiguousRoute, FailOnRequest)
+                    .Route(HttpMethod.Get, $"{RegisteredRoute}/{name}", new Unit());
+            }, CreateExpectedParams((NameKey, name)), RegisteredRouteWithParam);
         }
 
         [Fact]
