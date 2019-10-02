@@ -52,11 +52,6 @@ namespace Routing
 
         public bool Remove(T item)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
             var found = _dictionary.TryGetValue(item, out var node);
             if (!found)
             {
@@ -80,11 +75,6 @@ namespace Routing
 
         public bool Contains(T item)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
             return _dictionary.ContainsKey(item);
         }
 
