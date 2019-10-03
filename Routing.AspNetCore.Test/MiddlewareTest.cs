@@ -31,10 +31,11 @@ namespace Routing.AspNetCore.Test
         {
             public void Configure(IApplicationBuilder app)
             {
+                var routeRegistry = new RouteRegistryFacade<HttpContext, string>(HandleFallbackRequest);
                 app.UseRouting(
+                    routeRegistry,
                     Identity,
-                    ApplyResponseToContext,
-                    HandleFallbackRequest);
+                    ApplyResponseToContext);
             }
 
             private static T Identity<T>(T value) =>

@@ -8,13 +8,12 @@ namespace Routing.AspNetCore
     {
         public static IApplicationBuilder UseRouting<TRequest, TResponse>(
             this IApplicationBuilder applicationBuilder,
+            IRouteRegistry<TRequest, TResponse> routeRegistry,
             MapContextToRequest<TRequest> mapContextToRequest,
-            ApplyResponseToContext<TResponse> applyResponseToContext,
-            Func<TRequest, TResponse> handleFallbackRequest)
+            ApplyResponseToContext<TResponse> applyResponseToContext)
         {
             var loggerFactory = ResolveApplicationService<ILoggerFactory>(applicationBuilder);
             var logger = loggerFactory.CreateLogger<RoutingMiddleware<TRequest, TResponse>>();
-            var routeRegistry = new RouteRegistryFacade<TRequest, TResponse>(handleFallbackRequest);
             return applicationBuilder.UseMiddleware<RoutingMiddleware<TRequest, TResponse>>(
                 logger,
                 routeRegistry,
