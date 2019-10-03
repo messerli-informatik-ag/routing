@@ -14,7 +14,7 @@ namespace Routing.AspNetCore
         {
             var loggerFactory = ResolveApplicationService<ILoggerFactory>(applicationBuilder);
             var logger = loggerFactory.CreateLogger<RoutingMiddleware<TRequest, TResponse>>();
-            var routeRegistry = new RouteRegistry<TResponse, TRequest>(handleFallbackRequest);
+            var routeRegistry = new RouteRegistryFacade<TRequest, TResponse>(handleFallbackRequest);
             return applicationBuilder.UseMiddleware<RoutingMiddleware<TRequest, TResponse>>(
                 logger,
                 routeRegistry,

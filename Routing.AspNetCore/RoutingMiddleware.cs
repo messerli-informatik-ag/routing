@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,7 @@ namespace Routing.AspNetCore
     {
         private readonly ILogger _logger;
 
-        private readonly IRouteRegistry<TResponse, TRequest> _routeRegistry;
+        private readonly IRouteRegistry<TRequest, TResponse> _routeRegistry;
 
         private readonly MapContextToRequest<TRequest> _mapContextToRequest;
 
@@ -23,7 +22,7 @@ namespace Routing.AspNetCore
         public RoutingMiddleware(
             RequestDelegate next,
             ILogger logger,
-            IRouteRegistry<TResponse, TRequest> routeRegistry,
+            IRouteRegistry<TRequest, TResponse> routeRegistry,
             MapContextToRequest<TRequest> mapContextToRequest,
             ApplyResponseToContext<TResponse> applyResponseToContext)
         {

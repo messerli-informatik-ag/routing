@@ -3,8 +3,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Xunit;
 using Microsoft.AspNetCore.TestHost;
+using Xunit;
 
 namespace Routing.AspNetCore.Test
 {
@@ -16,8 +16,8 @@ namespace Routing.AspNetCore.Test
         public async Task FallbackRouteIsCalled()
         {
             using (var server = CreateTestServer())
+            using (var client = server.CreateClient())
             {
-                var client = server.CreateClient();
                 var response = await client.GetAsync("/");
                 var responseBody = await response.Content.ReadAsStringAsync();
                 Assert.Equal(FallbackResponse, responseBody);
@@ -33,7 +33,8 @@ namespace Routing.AspNetCore.Test
         {
             public void Configure(IApplicationBuilder app)
             {
-                app.UseRouting(context => context,
+                app.UseRouting(
+                    context => context,
                     ApplyResponseToContext,
                     HandleFallbackRequest);
             }
