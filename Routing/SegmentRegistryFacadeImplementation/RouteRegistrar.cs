@@ -26,8 +26,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
                         Literal literal => FindOrInsertNode(node.LiteralChildren, literal),
                         Parameter parameter => FindOrInsertNode(node.ParameterChildren, parameter),
                         _ => throw new InvalidOperationException()
-                    }
-                );
+                    });
             targetNode.HandleRequestFunctions[endpoint.Method] = handleRequest;
         }
 
