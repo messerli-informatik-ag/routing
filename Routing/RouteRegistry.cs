@@ -33,10 +33,10 @@ namespace Routing
             var requestHandlingData = Match(_segmentTree, method, segments, new Dictionary<string, string>());
             return requestHandlingData is null
                 ? _handleFallbackRequest(request)
-                : requestHandlingData.HandleRequest(request, requestHandlingData.Parameters);
+                : requestHandlingData(request);
         }
 
-        private static RequestHandlingData?
+        private static Func<TRequest, TResponse>?
             Match(SegmentNode<TRequest, TResponse> node,
                 HttpMethod method,
                 ICollection<string> segments,
@@ -56,7 +56,7 @@ namespace Routing
             if (segments.Count == 1)
             {
                 return node.HandleRequestFunctions.TryGetValue(method, out var handleRequest)
-                    ? new RequestHandlingData(handleRequest, currentParameters)
+                    ? CurryParameters(handleRequest, currentParameters)
                     : null;
             }
 
@@ -67,6 +67,12 @@ namespace Routing
                        .Select(child => Match(child, method, tail, currentParameters))
                        .FirstOrDefault(child => child != null);
         }
+
+        private static Func<TRequest, TResponse> CurryParameters(
+            HandleRequest<TRequest, TResponse> handleRequest,
+            IDictionary<string, string> parameters) =>
+            request => handleRequest(request, parameters);
+        
 
         private static bool NodeMatchesSegment(SegmentNode<TRequest, TResponse> node, string segment) =>
             !(node.Matcher is Literal { Identifier: var matchingSegment } && segment != matchingSegment);
@@ -170,19 +176,6 @@ namespace Routing
         private static SegmentNode<TRequest, TResponse>? FindSegmentInNodeList(IEnumerable<SegmentNode<TRequest, TResponse>>? node, ISegmentVariant segment)
         {
             return node?.FirstOrDefault(element => element.Matcher.Equals(segment));
-        }
-
-        private class RequestHandlingData
-        {
-            public RequestHandlingData(HandleRequest<TRequest, TResponse> handleRequest, IDictionary<string, string> parameters)
-            {
-                HandleRequest = handleRequest;
-                Parameters = parameters;
-            }
-
-            public HandleRequest<TRequest, TResponse> HandleRequest { get; }
-
-            public IDictionary<string, string> Parameters { get; }
         }
     }
 }
