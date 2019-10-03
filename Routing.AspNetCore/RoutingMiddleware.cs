@@ -1,68 +1,46 @@
-﻿using System;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Routing.AspNetCore
 {
+    public delegate void ApplyResponseToContext<in TResponse>(HttpContext context, TResponse response);
+
+    public delegate TRequest MapContextToRequest<out TRequest>(HttpContext context);
+
     internal class RoutingMiddleware<TRequest, TResponse>
     {
-        private readonly RequestDelegate _next;
-
         private readonly ILogger _logger;
 
-        private readonly IRouteRegistry<TRequest, TResponse> _routeRegistry;
-        
+        private readonly IRouteRegistry<TResponse, TRequest> _routeRegistry;
+
+        private readonly MapContextToRequest<TRequest> _mapContextToRequest;
+
+        private readonly ApplyResponseToContext<TResponse> _applyResponseToContext;
+
         public RoutingMiddleware(
-            RequestDelegate next,
             ILogger logger,
-            IRouteRegistry<TRequest, TResponse> routeRegistry)
+            IRouteRegistry<TResponse, TRequest> routeRegistry,
+            MapContextToRequest<TRequest> mapContextToRequest,
+            ApplyResponseToContext<TResponse> applyResponseToContext)
         {
-            _next = next;
             _logger = logger;
             _routeRegistry = routeRegistry;
+            _mapContextToRequest = mapContextToRequest;
+            _applyResponseToContext = applyResponseToContext;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
-            var request = new Request(context);
-            var response = new Response(context);
+            var method = new HttpMethod(context.Request.Method);
+            var request = _mapContextToRequest(context);
 
-            await lifecycleHandler.OnRequest(request);
+            var response = _routeRegistry.Route(method, context.Request.Path, request);
 
-            RegisterOnResponseStartingHandler(context, async () =>
-            {
-                _routeRegistry.Route(context.Request.Method, context.Request.Path, response);
-            });
+            _applyResponseToContext(context, response);
 
-            context.Features.Set(lifecycleHandler.Session);
-
-            try
-            {
-                await _next(context);
-            }
-            finally
-            {
-                // Todo: Idk what to put here lol
-                context.Features[typeof(ISession)] = null;
-            }
-        }
-
-        private void RegisterOnResponseStartingHandler(
-            HttpContext context,
-            Func<Task> onResponseAction)
-        {
-            context.Response.OnStarting(async () =>
-            {
-                try
-                {
-                    await onResponseAction();
-                }
-                catch (Exception exception)
-                {
-                    _logger.ErrorSavingTheSession(exception);
-                }
-            });
+            return Task.CompletedTask;
         }
     }
 }
