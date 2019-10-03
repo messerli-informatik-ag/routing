@@ -3,6 +3,5 @@
     [Equals]
     internal class Root : ISegmentVariant
     {
-
     }
 }
