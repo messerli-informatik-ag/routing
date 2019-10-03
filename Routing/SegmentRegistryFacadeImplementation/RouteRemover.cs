@@ -44,6 +44,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
                 removeFromParent();
             }
         }
+
         private static void RemoveUnusedChildNodes(ICollection<SegmentNode<TRequest, TResponse>> children)
         {
             var readonlyListOfChildren = children.ToList();
@@ -52,6 +53,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
                 RemoveUnusedNodes(child, () => children.Remove(child));
             }
         }
+
         private static SegmentNode<TRequest, TResponse>? FindSegmentInNode(SegmentNode<TRequest, TResponse>? node, ISegmentVariant segment)
         {
             return segment switch
@@ -62,6 +64,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
                 _ => throw new InvalidOperationException()
             };
         }
+
         private static SegmentNode<TRequest, TResponse>? FindSegmentInNodeList(IEnumerable<SegmentNode<TRequest, TResponse>>? node, ISegmentVariant segment)
         {
             return node?.FirstOrDefault(element => element.Matcher.Equals(segment));

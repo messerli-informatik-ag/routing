@@ -10,13 +10,16 @@ namespace Routing.SegmentRegistryFacadeImplementation
     internal class Router<TRequest, TResponse> : IRouter<TRequest, TResponse>
     {
         private readonly IPathParser _pathParser;
+
         private readonly Func<TRequest, TResponse> _handleFallbackRequest;
+
         public Router(IPathParser pathParser,
             Func<TRequest, TResponse> handleFallbackRequest)
         {
             _pathParser = pathParser;
             _handleFallbackRequest = handleFallbackRequest;
         }
+
         public TResponse Route(SegmentNode<TRequest, TResponse> segmentTree, Endpoint endpoint, TRequest request)
         {
             var segments = _pathParser.Parse(endpoint.Route)?.ToList();
@@ -62,10 +65,12 @@ namespace Routing.SegmentRegistryFacadeImplementation
                 .Select(child => Match(child, method, tail, currentParameters))
                 .FirstOrDefault(child => child != null);
         }
+
         private static Func<TRequest, TResponse> CurryParameters(
             HandleRequest<TRequest, TResponse> handleRequest,
             IDictionary<string, string> parameters) =>
             request => handleRequest(request, parameters);
+
         private static bool NodeMatchesSegment(SegmentNode<TRequest, TResponse> node, string segment) =>
             !(node.Matcher is Literal { Identifier: var matchingSegment } && segment != matchingSegment);
 
