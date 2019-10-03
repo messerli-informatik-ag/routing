@@ -6,7 +6,7 @@ using Routing.SegmentVariant;
 
 namespace Routing
 {
-    public class RouteRegistryFacade<TRequest, TResponse> : IRouteRegistry<TRequest, TResponse>
+    public sealed class RouteRegistryFacade<TRequest, TResponse> : IRouteRegistry<TRequest, TResponse>
     {
         private readonly SegmentNode<TRequest, TResponse> _segmentTree
             = new SegmentNode<TRequest, TResponse>(new Root());

@@ -7,7 +7,7 @@ using Funcky;
 
 namespace Routing.Test
 {
-    public class RoutingTest
+    public sealed class RoutingTest
     {
         private const string RegisteredRoute = "/registered";
 

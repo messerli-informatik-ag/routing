@@ -7,7 +7,7 @@ using static Routing.SegmentRegistryFacadeImplementation.ParsingUtility;
 
 namespace Routing.SegmentRegistryFacadeImplementation
 {
-    internal class RouteRemover<TRequest, TResponse> : IRouteRemover<TRequest, TResponse>
+    internal sealed class RouteRemover<TRequest, TResponse> : IRouteRemover<TRequest, TResponse>
     {
         private readonly ISegmentParser _segmentParser;
 

@@ -7,7 +7,7 @@ namespace Routing
     /// <a href="https://stackoverflow.com/a/17853085/5903309">Source</a>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class OrderedSet<T> : ICollection<T>
+    internal sealed class OrderedSet<T> : ICollection<T>
     {
         private readonly IDictionary<T, LinkedListNode<T>> _dictionary;
 
@@ -25,7 +25,7 @@ namespace Routing
 
         public int Count => _dictionary.Count;
 
-        public virtual bool IsReadOnly => _dictionary.IsReadOnly;
+        public bool IsReadOnly => _dictionary.IsReadOnly;
 
         void ICollection<T>.Add(T item)
         {

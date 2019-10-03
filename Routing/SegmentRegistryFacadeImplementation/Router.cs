@@ -7,7 +7,7 @@ using Routing.SegmentVariant;
 
 namespace Routing.SegmentRegistryFacadeImplementation
 {
-    internal class Router<TRequest, TResponse> : IRouter<TRequest, TResponse>
+    internal sealed class Router<TRequest, TResponse> : IRouter<TRequest, TResponse>
     {
         private readonly IPathParser _pathParser;
 

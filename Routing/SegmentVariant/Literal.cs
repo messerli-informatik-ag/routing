@@ -3,7 +3,7 @@
 namespace Routing.SegmentVariant
 {
     [Equals]
-    internal class Literal : ISegmentVariant
+    internal sealed class Literal : ISegmentVariant
     {
         internal Literal(string identifier)
         {

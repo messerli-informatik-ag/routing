@@ -3,7 +3,7 @@
 namespace Routing.SegmentVariant
 {
     [Equals]
-    internal class Root : ISegmentVariant
+    internal sealed class Root : ISegmentVariant
     {
         public static bool operator ==(Root left, Root right) => Operator.Weave(left, right);
 
