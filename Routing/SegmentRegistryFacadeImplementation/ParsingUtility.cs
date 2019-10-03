@@ -7,9 +7,8 @@ namespace Routing.SegmentRegistryFacadeImplementation
 {
     internal static class ParsingUtility
     {
-        public static IEnumerable<ISegmentVariant> ParseRoute(ISegmentParser segmentParser, string route)
-        {
-            return segmentParser.Parse(route) ?? throw new ArgumentException($"Invalid route: {route}", nameof(route));
-        }
+        public static IEnumerable<ISegmentVariant> ParseRoute(ISegmentParser segmentParser, string route) =>
+            segmentParser.Parse(route)
+            ?? throw new ArgumentException($"Invalid route: {route}", nameof(route));
     }
 }
