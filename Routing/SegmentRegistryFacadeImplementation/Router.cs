@@ -17,15 +17,15 @@ namespace Routing.SegmentRegistryFacadeImplementation
             _pathParser = pathParser;
             _handleFallbackRequest = handleFallbackRequest;
         }
-        public TResponse Route(SegmentNode<TRequest, TResponse> segmentTree, HttpMethod method, string path, TRequest request)
+        public TResponse Route(SegmentNode<TRequest, TResponse> segmentTree, Endpoint endpoint, TRequest request)
         {
-            var segments = _pathParser.Parse(path)?.ToList();
+            var segments = _pathParser.Parse(endpoint.Route)?.ToList();
             if (segments is null)
             {
                 return _handleFallbackRequest(request);
             }
 
-            var requestHandlingData = Match(segmentTree, method, segments, new Dictionary<string, string>());
+            var requestHandlingData = Match(segmentTree, endpoint.Method, segments, new Dictionary<string, string>());
             return requestHandlingData is null
                 ? _handleFallbackRequest(request)
                 : requestHandlingData(request);

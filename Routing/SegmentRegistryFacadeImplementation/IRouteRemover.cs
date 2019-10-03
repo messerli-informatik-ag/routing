@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-namespace Routing.SegmentRegistryFacadeImplementation
+﻿namespace Routing.SegmentRegistryFacadeImplementation
 {
     internal interface IRouteRemover<TRequest, TResponse>
     {

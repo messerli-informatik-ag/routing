@@ -1,9 +1,7 @@
-﻿using System.Net.Http;
-
-namespace Routing.SegmentRegistryFacadeImplementation
+﻿namespace Routing.SegmentRegistryFacadeImplementation
 {
     internal interface IRouter<TRequest, TResponse>
     {
-        TResponse Route(SegmentNode<TRequest, TResponse> segmentTree, HttpMethod method, string path, TRequest request);
+        TResponse Route(SegmentNode<TRequest, TResponse> segmentTree, Endpoint endpoint, TRequest request);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using Routing.Parsing;
 using Routing.SegmentVariant;
 
@@ -16,9 +15,9 @@ namespace Routing.SegmentRegistryFacadeImplementation
             _segmentParser = segmentParser;
         }
 
-        public void Register(SegmentNode<TRequest, TResponse> segmentTree, HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest)
+        public void Register(SegmentNode<TRequest, TResponse> segmentTree, Endpoint endpoint, HandleRequest<TRequest, TResponse> handleRequest)
         {
-            var segments = ParsingUtility.ParseRoute(_segmentParser, route);
+            var segments = ParsingUtility.ParseRoute(_segmentParser, endpoint.Route);
             var targetNode = segments
                 .Aggregate(segmentTree, (node, segment) =>
                     segment switch
@@ -29,7 +28,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
                         _ => throw new InvalidOperationException()
                     }
                 );
-            targetNode.HandleRequestFunctions[method] = handleRequest;
+            targetNode.HandleRequestFunctions[endpoint.Method] = handleRequest;
         }
 
         private static SegmentNode<TRequest, TResponse> FindOrInsertNode(ICollection<SegmentNode<TRequest, TResponse>> collection, ISegmentVariant segment)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using Routing.Parsing;
 using Routing.SegmentVariant;
 using static Routing.SegmentRegistryFacadeImplementation.ParsingUtility;

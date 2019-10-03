@@ -1,13 +1,10 @@
-﻿using System.Net.Http;
-
-namespace Routing.SegmentRegistryFacadeImplementation
+﻿namespace Routing.SegmentRegistryFacadeImplementation
 {
     internal interface IRouteRegistrar<TRequest, TResponse>
     {
         void Register(
             SegmentNode<TRequest, TResponse> segmentTree,
-            HttpMethod method,
-            string route,
+            Endpoint endpoint,
             HandleRequest<TRequest, TResponse> handleRequest);
     }
 }
