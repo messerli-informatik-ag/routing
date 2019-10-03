@@ -32,7 +32,6 @@ namespace Routing.SegmentRegistryFacadeImplementation
             targetNode.HandleRequestFunctions[method] = handleRequest;
         }
 
-
         private static SegmentNode<TRequest, TResponse> FindOrInsertNode(ICollection<SegmentNode<TRequest, TResponse>> collection, ISegmentVariant segment)
         {
             var existingNode = collection.FirstOrDefault(element => element.Matcher.Equals(segment));
