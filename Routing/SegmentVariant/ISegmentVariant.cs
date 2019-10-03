@@ -1,6 +1,6 @@
 ﻿namespace Routing.SegmentVariant
 {
-    internal interface ISegmentVariant
+    public interface ISegmentVariant
     {
     }
 }

@@ -7,7 +7,7 @@ using Routing.SegmentVariant;
 namespace Routing
 {
     [Equals]
-    internal sealed class SegmentNode<TRequest, TResponse>
+    public sealed class SegmentNode<TRequest, TResponse>
     {
         public SegmentNode(ISegmentVariant matcher)
         {

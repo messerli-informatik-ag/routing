@@ -6,28 +6,31 @@ namespace Routing
 {
     public class RouteRegistryBuilder<TRequest, TResponse>
     {
-        private readonly Func<TRequest, TResponse> _handleFallbackRequest;
+        private readonly IRouter<TRequest, TResponse> _router;
 
-        private RouteRegistryBuilder(Func<TRequest, TResponse> handleFallbackRequest)
+        private RouteRegistryBuilder(IRouter<TRequest, TResponse> router)
         {
-            _handleFallbackRequest = handleFallbackRequest;
+            _router = router;
         }
 
         public static RouteRegistryBuilder<TRequest, TResponse> WithFallbackRequestHandler(
-            Func<TRequest, TResponse> handleFallbackRequest)
-        {
-            return new RouteRegistryBuilder<TRequest, TResponse>(handleFallbackRequest);
-        }
+            Func<TRequest, TResponse> handleFallbackRequest) =>
+            WithCustomRouter(new Router<TRequest, TResponse>(
+                    new PathParser(),
+                    handleFallbackRequest));
+
+        public static RouteRegistryBuilder<TRequest, TResponse> WithCustomRouter(
+            IRouter<TRequest, TResponse> router) =>
+            new RouteRegistryBuilder<TRequest, TResponse>(router);
 
         public IRouteRegistry<TRequest, TResponse> Build()
         {
             var segmentParser = new SegmentParser();
-            var pathParser = new PathParser();
 
             return new RouteRegistryFacade<TRequest, TResponse>(
                 new RouteRemover<TRequest, TResponse>(segmentParser),
                 new RouteRegistrar<TRequest, TResponse>(segmentParser),
-                new Router<TRequest, TResponse>(pathParser, _handleFallbackRequest));
+                _router);
         }
     }
 }

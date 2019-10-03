@@ -5,7 +5,7 @@ using System.Net.Http;
 namespace Routing.SegmentRegistryFacadeImplementation
 {
     [Equals]
-    internal sealed class Endpoint
+    public sealed class Endpoint
     {
         public Endpoint(HttpMethod method, string route)
         {

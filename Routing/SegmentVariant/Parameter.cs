@@ -3,7 +3,7 @@
 namespace Routing.SegmentVariant
 {
     [Equals]
-    internal sealed class Parameter : ISegmentVariant
+    public sealed class Parameter : ISegmentVariant
     {
         internal Parameter(string key)
         {
