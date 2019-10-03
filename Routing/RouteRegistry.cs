@@ -104,6 +104,7 @@ namespace Routing
             var existingNode = collection.FirstOrDefault(element => element.Matcher.Equals(segment));
             return existingNode ?? InsertNode(collection, segment);
         }
+
         private static SegmentNode<TResponse, TRequest> InsertNode(ICollection<SegmentNode<TResponse, TRequest>> collection, ISegmentVariant segment)
         {
             var newNode = new SegmentNode<TResponse, TRequest>(segment);
