@@ -10,6 +10,7 @@ namespace Routing
     internal class OrderedSet<T> : ICollection<T>
     {
         private readonly IDictionary<T, LinkedListNode<T>> _dictionary;
+
         private readonly LinkedList<T> _linkedList = new LinkedList<T>();
 
         public OrderedSet()
