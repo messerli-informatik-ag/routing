@@ -6,7 +6,7 @@ using static Routing.Parsing.PathParsing;
 
 namespace Routing.Parsing
 {
-    internal class SegmentParser : ISegmentParser
+    internal sealed class SegmentParser : ISegmentParser
     {
         private const char ParameterBeginToken = '{';
         private const char ParameterEndToken = '}';

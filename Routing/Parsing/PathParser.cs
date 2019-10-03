@@ -4,7 +4,7 @@ using static Routing.Parsing.PathParsing;
 
 namespace Routing.Parsing
 {
-    internal class PathParser : IPathParser
+    internal sealed class PathParser : IPathParser
     {
         /// <summary>
         /// ABNF spec from <a href="https://tools.ietf.org/html/rfc3986">RFC3986</a>:

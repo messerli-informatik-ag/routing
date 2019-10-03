@@ -1,7 +1,9 @@
-﻿namespace Routing.SegmentVariant
+﻿#pragma warning disable 660,661
+
+namespace Routing.SegmentVariant
 {
     [Equals]
-    internal class Parameter : ISegmentVariant
+    internal sealed class Parameter : ISegmentVariant
     {
         internal Parameter(string key)
         {
@@ -9,5 +11,9 @@
         }
 
         internal string Key { get; }
+
+        public static bool operator ==(Parameter left, Parameter right) => Operator.Weave(left, right);
+
+        public static bool operator !=(Parameter left, Parameter right) => Operator.Weave(left, right);
     }
 }

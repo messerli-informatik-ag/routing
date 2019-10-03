@@ -5,8 +5,8 @@ nuget Funcky ~> 1.2.0
 nuget Microsoft.NET.Test.Sdk ~> 16.2.0
 nuget xunit ~> 2.4.0
 nuget xunit.runner.visualstudio ~> 2.4.0
-nuget Equals.Fody ~> 1.9.5
-nuget Fody ~> 4.0
+nuget Fody ~> 6.0 copy_local: true
+nuget Equals.Fody ~> 4.0 copy_local: true
 nuget Microsoft.AspNetCore.Http.Abstractions ~> 2.2.0
 nuget Microsoft.Extensions.Logging.Abstractions ~> 2.2.0
 nuget Microsoft.AspNetCore.TestHost ~> 3.0.0

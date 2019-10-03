@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace Routing
 {
     /// <summary>
-    /// <a href="https://stackoverflow.com/a/17853085/5903309">Source</a>
+    /// <a href="https://stackoverflow.com/a/17853085/5903309">Source</a>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    internal class OrderedSet<T> : ICollection<T>
+    /// <typeparam name="T">The type of elements in the set.</typeparam>
+    internal sealed class OrderedSet<T> : ICollection<T>
     {
         private readonly IDictionary<T, LinkedListNode<T>> _dictionary;
+
         private readonly LinkedList<T> _linkedList = new LinkedList<T>();
 
         public OrderedSet()
@@ -25,7 +25,7 @@ namespace Routing
 
         public int Count => _dictionary.Count;
 
-        public virtual bool IsReadOnly => _dictionary.IsReadOnly;
+        public bool IsReadOnly => _dictionary.IsReadOnly;
 
         void ICollection<T>.Add(T item)
         {
