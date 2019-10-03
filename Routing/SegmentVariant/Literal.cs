@@ -12,8 +12,8 @@ namespace Routing.SegmentVariant
 
         internal string Identifier { get; }
 
-        public static bool operator==(Literal left, Literal right) => Operator.Weave(left, right);
+        public static bool operator ==(Literal left, Literal right) => Operator.Weave(left, right);
 
-        public static bool operator!=(Literal left, Literal right) => Operator.Weave(left, right);
+        public static bool operator !=(Literal left, Literal right) => Operator.Weave(left, right);
     }
 }
