@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Routing
 {
     /// <summary>
-    /// <a href="https://stackoverflow.com/a/17853085/5903309">Source</a>
+    /// <a href="https://stackoverflow.com/a/17853085/5903309">Source</a>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of elements in the set.</typeparam>
     internal sealed class OrderedSet<T> : ICollection<T>
     {
         private readonly IDictionary<T, LinkedListNode<T>> _dictionary;
