@@ -1,4 +1,6 @@
 ﻿using System;
+using Routing.Parsing;
+using Routing.SegmentRegistryFacadeImplementation;
 
 namespace Routing
 {
@@ -17,7 +19,15 @@ namespace Routing
             return new RouteRegistryBuilder<TRequest, TResponse>(handleFallbackRequest);
         }
 
-        public IRouteRegistry<TRequest, TResponse> Build() =>
-            new RouteRegistryFacade<TRequest, TResponse>(_handleFallbackRequest);
+        public IRouteRegistry<TRequest, TResponse> Build()
+        {
+            var segmentParser = new SegmentParser();
+            var pathParser = new PathParser();
+
+            return new RouteRegistryFacade<TRequest, TResponse>(
+                new RouteRemover<TRequest, TResponse>(segmentParser),
+                new RouteRegistrar<TRequest, TResponse>(segmentParser),
+                new Router<TRequest, TResponse>(pathParser, _handleFallbackRequest));
+        }
     }
 }
