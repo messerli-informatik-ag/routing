@@ -13,7 +13,8 @@ namespace Routing.SegmentRegistryFacadeImplementation
 
         private readonly Func<TRequest, TResponse> _handleFallbackRequest;
 
-        public Router(IPathParser pathParser,
+        public Router(
+            IPathParser pathParser,
             Func<TRequest, TResponse> handleFallbackRequest)
         {
             _pathParser = pathParser;
@@ -35,7 +36,8 @@ namespace Routing.SegmentRegistryFacadeImplementation
         }
 
         private static Func<TRequest, TResponse>?
-            Match(SegmentNode<TRequest, TResponse> node,
+            Match(
+                SegmentNode<TRequest, TResponse> node,
                 HttpMethod method,
                 ICollection<string> segments,
                 IDictionary<string, string> parameters)
@@ -79,7 +81,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
             var (key, value) = keyValuePair;
             return new Dictionary<TKey, TValue>(dictionary)
             {
-                [key] = value
+                [key] = value,
             };
         }
     }

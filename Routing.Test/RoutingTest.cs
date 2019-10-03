@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using Xunit;
 using Funcky;
+using Xunit;
 
 namespace Routing.Test
 {
@@ -13,19 +13,19 @@ namespace Routing.Test
 
         private const string NameKey = "name";
         private const string AgeKey = "age";
-        private static readonly string RegisteredRouteWithParam = $"{RegisteredRoute}/{{{NameKey}}}";
-        private static readonly string RegisteredRouteWithParams = $"{RegisteredRouteWithParam}/ages/{{{AgeKey}}}";
 
         private const string RootRoute = "/";
         private const string RootRouteWithParam = RootRoute + "{name}";
+
+        private static readonly string RegisteredRouteWithParam = $"{RegisteredRoute}/{{{NameKey}}}";
+        private static readonly string RegisteredRouteWithParams = $"{RegisteredRouteWithParam}/ages/{{{AgeKey}}}";
 
         [Fact]
         public void CallsFallbackRouteWhenNoOthersAreRegistered()
         {
             AssertCallToFallbackRoute(routeRegistry =>
-                    routeRegistry.Route(HttpMethod.Get, "/foo", new Unit()));
+                    routeRegistry.Route(HttpMethod.Get, "/foo", default));
         }
-
 
         [Fact]
         public void CallsFallbackRouteWhenOtherRouteIsRegistered()
@@ -33,7 +33,7 @@ namespace Routing.Test
             AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, "/bar", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
+                routeRegistry.Route(HttpMethod.Get, "/foo", default);
             });
         }
 
@@ -43,7 +43,7 @@ namespace Routing.Test
             AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Post, "/foo", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, "/foo", new Unit());
+                routeRegistry.Route(HttpMethod.Get, "/foo", default);
             });
         }
 
@@ -55,7 +55,7 @@ namespace Routing.Test
                 const string route = "/foo";
                 routeRegistry.Register(HttpMethod.Get, route, FailOnRequest);
                 routeRegistry.Remove(HttpMethod.Get, route);
-                routeRegistry.Route(HttpMethod.Get, route, new Unit());
+                routeRegistry.Route(HttpMethod.Get, route, default);
             });
         }
 
@@ -65,7 +65,7 @@ namespace Routing.Test
             AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/foo", new Unit());
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/foo", default);
             });
         }
 
@@ -75,24 +75,8 @@ namespace Routing.Test
             AssertCallToFallbackRoute(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, default);
             });
-        }
-
-        private static void AssertCallToFallbackRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
-        {
-            var fallbackWasCalled = false;
-
-            Unit HandleFallbackRequest(Unit request)
-            {
-                fallbackWasCalled = true;
-                return new Unit();
-            }
-
-            var routeRegistry = new RouteRegistryFacade<Unit, Unit>(HandleFallbackRequest);
-            stateManipulation(routeRegistry);
-
-            Assert.True(fallbackWasCalled);
         }
 
         [Fact]
@@ -101,7 +85,7 @@ namespace Routing.Test
             AssertRouteWasCalled(RegisteredRoute, routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, default);
             });
         }
 
@@ -110,26 +94,8 @@ namespace Routing.Test
         {
             AssertRouteWasCalled(RootRoute, routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, RootRoute, new Unit());
+                routeRegistry.Route(HttpMethod.Get, RootRoute, default);
             });
-        }
-
-        private static void AssertRouteWasCalled(string registeredRoute, Action < IRouteRegistry<Unit, Unit>> stateManipulation)
-        {
-            var routeWasCalled = false;
-
-            Unit HandleRequest(Unit request, IDictionary<string, string> routeParams)
-            {
-                routeWasCalled = true;
-                return new Unit();
-            }
-            
-            var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, registeredRoute, HandleRequest);
-
-            stateManipulation(routeRegistry);
-
-            Assert.True(routeWasCalled);
         }
 
         [Fact]
@@ -140,14 +106,14 @@ namespace Routing.Test
             Unit HandleRequest(Unit request, IDictionary<string, string> routeParams)
             {
                 routeWasCalled = true;
-                return new Unit();
+                return default;
             }
 
             const string subRoute = RegisteredRoute + "/foo";
             var routeRegistry = CreateRouteRegistry();
             routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
             routeRegistry.Register(HttpMethod.Get, subRoute, HandleRequest);
-            routeRegistry.Route(HttpMethod.Get, subRoute, new Unit());
+            routeRegistry.Route(HttpMethod.Get, subRoute, default);
 
             Assert.True(routeWasCalled);
         }
@@ -166,7 +132,7 @@ namespace Routing.Test
         public void CallsFallbackWhenRoutingInvalidRoute(string route)
         {
             AssertCallToFallbackRoute(routeRegistry =>
-                routeRegistry.Route(HttpMethod.Get, route, new Unit()));
+                routeRegistry.Route(HttpMethod.Get, route, default));
         }
 
         public static TheoryData<string> InvalidRoutes()
@@ -224,7 +190,7 @@ namespace Routing.Test
                 RegisteredRouteWithParam,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit());
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default);
             });
         }
 
@@ -237,7 +203,7 @@ namespace Routing.Test
                 RegisteredRouteWithParam,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit());
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default);
             });
         }
 
@@ -250,7 +216,7 @@ namespace Routing.Test
                 RootRouteWithParam,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, "/" + param, new Unit());
+                routeRegistry.Route(HttpMethod.Get, "/" + param, default);
             });
         }
 
@@ -265,7 +231,7 @@ namespace Routing.Test
                 RegisteredRouteWithParams,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, $"{RegisteredRoute}/{firstParam}/ages/{secondParam}", new Unit());
+                routeRegistry.Route(HttpMethod.Get, $"{RegisteredRoute}/{firstParam}/ages/{secondParam}", default);
             });
         }
 
@@ -280,7 +246,7 @@ namespace Routing.Test
             {
                 routeRegistry
                     .Register(HttpMethod.Get, RootRoute, FailOnRequest)
-                    .Route(HttpMethod.Get, $"/{name}", new Unit());
+                    .Route(HttpMethod.Get, $"/{name}", default);
             });
         }
 
@@ -297,7 +263,7 @@ namespace Routing.Test
             {
                 routeRegistry
                     .Register(HttpMethod.Get, moreLiteralRoute, FailOnRequest)
-                    .Route(HttpMethod.Get, $"{RegisteredRoute}/foo/bar/baz", new Unit());
+                    .Route(HttpMethod.Get, $"{RegisteredRoute}/foo/bar/baz", default);
             });
         }
 
@@ -314,7 +280,7 @@ namespace Routing.Test
             {
                 routeRegistry
                     .Register(HttpMethod.Get, ambiguousRoute, FailOnRequest)
-                    .Route(HttpMethod.Get, $"{RegisteredRoute}/{name}", new Unit());
+                    .Route(HttpMethod.Get, $"{RegisteredRoute}/{name}", default);
             });
         }
 
@@ -327,21 +293,21 @@ namespace Routing.Test
             {
                 calledRoutes[0] = true;
                 Assert.Empty(routeParams);
-                return new Unit();
+                return default;
             }
 
             Unit HandleSecondRequest(Unit request, IDictionary<string, string> routeParams)
             {
                 calledRoutes[1] = true;
                 Assert.Equal(CreateExpectedParams(("bar", "BAR")),  routeParams);
-                return new Unit();
+                return default;
             }
 
             Unit HandleThirdRequest(Unit request, IDictionary<string, string> routeParams)
             {
                 calledRoutes[2] = true;
                 Assert.Equal(CreateExpectedParams(("foo", "FOO")), routeParams);
-                return new Unit();
+                return default;
             }
 
             var routeRegistry = CreateRouteRegistry();
@@ -350,9 +316,9 @@ namespace Routing.Test
                 .Register(HttpMethod.Get, "/foo/{bar}", HandleSecondRequest)
                 .Register(HttpMethod.Get, "/{foo}", HandleThirdRequest);
 
-            routeRegistry.Route(HttpMethod.Get, "/foo/bar/baz", new Unit());
-            routeRegistry.Route(HttpMethod.Get, "/foo/BAR", new Unit());
-            routeRegistry.Route(HttpMethod.Get, "/FOO", new Unit());
+            routeRegistry.Route(HttpMethod.Get, "/foo/bar/baz", default);
+            routeRegistry.Route(HttpMethod.Get, "/foo/BAR", default);
+            routeRegistry.Route(HttpMethod.Get, "/FOO", default);
 
             Assert.All(calledRoutes, Assert.True);
         }
@@ -362,7 +328,7 @@ namespace Routing.Test
         public void CallsFallbackWhenRoutingInvalidRouteParam(string param)
         {
             AssertCallToFallbackRoute(routeRegistry =>
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit()));
+                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default));
         }
 
         public static TheoryData<string> InvalidParams()
@@ -391,6 +357,40 @@ namespace Routing.Test
             };
         }
 
+        private static void AssertCallToFallbackRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        {
+            var fallbackWasCalled = false;
+
+            Unit HandleFallbackRequest(Unit request)
+            {
+                fallbackWasCalled = true;
+                return default;
+            }
+
+            var routeRegistry = new RouteRegistryFacade<Unit, Unit>(HandleFallbackRequest);
+            stateManipulation(routeRegistry);
+
+            Assert.True(fallbackWasCalled);
+        }
+
+        private static void AssertRouteWasCalled(string registeredRoute, Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        {
+            var routeWasCalled = false;
+
+            Unit HandleRequest(Unit request, IDictionary<string, string> routeParams)
+            {
+                routeWasCalled = true;
+                return default;
+            }
+
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, registeredRoute, HandleRequest);
+
+            stateManipulation(routeRegistry);
+
+            Assert.True(routeWasCalled);
+        }
+
         private static void AssertRouteWasCalledWithParams(
             IDictionary<string, string> expectedRouteParams,
             string registeredRoute,
@@ -402,7 +402,7 @@ namespace Routing.Test
             {
                 routeWasCalled = true;
                 Assert.Equal(expectedRouteParams, routeParams);
-                return new Unit();
+                return default;
             }
 
             var routeRegistry = CreateRouteRegistry();

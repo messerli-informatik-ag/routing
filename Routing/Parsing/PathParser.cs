@@ -50,7 +50,7 @@ namespace Routing.Parsing
                 ? segments.Select(segment => segment!)
                 : null;
         }
-        
+
         private static ICollection<string>? ParseSegments(string path)
         {
             var segments = SplitSegments(path);

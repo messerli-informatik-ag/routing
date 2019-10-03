@@ -57,7 +57,7 @@ namespace Routing.Parsing
             IsParameter(segment)
                 ? ParseParameter(segment)
                 : ParseLiteral(segment);
-        
+
         private static ISegmentVariant? ParseLiteral(string segment) =>
             IsValidSpecifier(segment)
                 ? new Literal(segment)
