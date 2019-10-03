@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 660,661
+
+using System.Collections.Generic;
 using System.Net.Http;
 using Routing.SegmentVariant;
 
@@ -22,5 +24,9 @@ namespace Routing
 
         public ICollection<SegmentNode<TResponse, TRequest>> ParameterChildren { get; }
             = new OrderedSet<SegmentNode<TResponse, TRequest>>();
+
+        public static bool operator ==(SegmentNode<TResponse, TRequest> left, SegmentNode<TResponse, TRequest> right) => Operator.Weave(left, right);
+
+        public static bool operator !=(SegmentNode<TResponse, TRequest> left, SegmentNode<TResponse, TRequest> right) => Operator.Weave(left, right);
     }
 }
