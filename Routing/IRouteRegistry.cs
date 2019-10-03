@@ -3,7 +3,7 @@ using RouteParams = System.Collections.Generic.IDictionary<string, string>;
 
 namespace Routing
 {
-    public delegate TResponse HandleRequest<out TResponse, in TRequest>(TRequest request, RouteParams routeParams);
+    public delegate TResponse HandleRequest<in TRequest, out TResponse>(TRequest request, RouteParams routeParams);
 
     public interface IRouteRegistry<TRequest, TResponse>
     {
