@@ -41,18 +41,23 @@ namespace Routing.AspNetCore
             try
             {
                 var response = _routeRegistry.Route(method, context.Request.Path, request);
-                try
-                {
-                    await _applyResponseToContext(context, response);
-                }
-                catch (Exception exception)
-                {
-                    _logger.ErrorWhileConvertingResponseToContext(exception);
-                }
+                await ApplyResponseToContext(context, response);
             }
             catch (Exception exception)
             {
                 _logger.ErrorWhileRouting(exception);
+            }
+        }
+
+        private async Task ApplyResponseToContext(HttpContext context, TResponse response)
+        {
+            try
+            {
+                await _applyResponseToContext(context, response);
+            }
+            catch (Exception exception)
+            {
+                _logger.ErrorWhileConvertingResponseToContext(exception);
             }
         }
     }
