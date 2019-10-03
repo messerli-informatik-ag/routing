@@ -34,10 +34,12 @@ namespace Routing.AspNetCore.Test
             public void Configure(IApplicationBuilder app)
             {
                 app.UseRouting(
-                    context => context,
+                    Identity,
                     ApplyResponseToContext,
                     HandleFallbackRequest);
             }
+
+            private static T Identity<T>(T value) => value;
 
             private static async Task ApplyResponseToContext(HttpContext context, string response) =>
                 await context.Response.WriteAsync(response);
