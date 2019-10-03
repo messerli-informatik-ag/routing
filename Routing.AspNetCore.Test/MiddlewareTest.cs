@@ -24,12 +24,10 @@ namespace Routing.AspNetCore.Test
             }
         }
 
-        private static TestServer CreateTestServer()
-        {
-            return new TestServer(WebHost.CreateDefaultBuilder().UseStartup<Startup>());
-        }
+        private static TestServer CreateTestServer() =>
+            new TestServer(WebHost.CreateDefaultBuilder().UseStartup<Startup>());
 
-        public class Startup
+        private class Startup
         {
             public void Configure(IApplicationBuilder app)
             {
@@ -39,12 +37,14 @@ namespace Routing.AspNetCore.Test
                     HandleFallbackRequest);
             }
 
-            private static T Identity<T>(T value) => value;
+            private static T Identity<T>(T value) =>
+                value;
 
             private static async Task ApplyResponseToContext(HttpContext context, string response) =>
                 await context.Response.WriteAsync(response);
 
-            private static string HandleFallbackRequest(HttpContext request) => FallbackResponse;
+            private static string HandleFallbackRequest(HttpContext request) =>
+                FallbackResponse;
         }
     }
 }
