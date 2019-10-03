@@ -11,7 +11,7 @@ namespace Routing
             _handleFallbackRequest = handleFallbackRequest;
         }
 
-        public RouteRegistryBuilder<TRequest, TResponse> WithFallbackRequestHandler(
+        public static RouteRegistryBuilder<TRequest, TResponse> WithFallbackRequestHandler(
             Func<TRequest, TResponse> handleFallbackRequest)
         {
             return new RouteRegistryBuilder<TRequest, TResponse>(handleFallbackRequest);

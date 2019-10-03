@@ -31,7 +31,9 @@ namespace Routing.AspNetCore.Test
         {
             public void Configure(IApplicationBuilder app)
             {
-                var routeRegistry = new RouteRegistryFacade<HttpContext, string>(HandleFallbackRequest);
+                var routeRegistry = RouteRegistryBuilder<HttpContext, string>
+                    .WithFallbackRequestHandler(HandleFallbackRequest)
+                    .Build();
                 app.UseRouting(
                     routeRegistry,
                     Identity,

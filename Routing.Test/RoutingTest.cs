@@ -367,7 +367,9 @@ namespace Routing.Test
                 return default;
             }
 
-            var routeRegistry = new RouteRegistryFacade<Unit, Unit>(HandleFallbackRequest);
+            var routeRegistry = RouteRegistryBuilder<Unit, Unit>
+                .WithFallbackRequestHandler(HandleFallbackRequest)
+                .Build();
             stateManipulation(routeRegistry);
 
             Assert.True(fallbackWasCalled);
@@ -415,7 +417,9 @@ namespace Routing.Test
 
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
         {
-            return new RouteRegistryFacade<Unit, Unit>(FailOnFallbackRequest);
+            return RouteRegistryBuilder<Unit, Unit>
+                .WithFallbackRequestHandler(FailOnFallbackRequest)
+                .Build();
         }
 
         private static Unit FailOnFallbackRequest(Unit request)
