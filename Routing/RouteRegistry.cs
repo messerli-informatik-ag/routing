@@ -7,10 +7,10 @@ using Routing.SegmentVariant;
 
 namespace Routing
 {
-    public class RouteRegistry<TResponse, TRequest> : IRouteRegistry<TResponse, TRequest>
+    public class RouteRegistry<TRequest, TResponse> : IRouteRegistry<TRequest, TResponse>
     {
-        private readonly SegmentNode<TResponse, TRequest> _segmentTree
-            = new SegmentNode<TResponse, TRequest>(new Root());
+        private readonly SegmentNode<TRequest, TResponse> _segmentTree
+            = new SegmentNode<TRequest, TResponse>(new Root());
 
         private readonly Func<TRequest, TResponse> _handleFallbackRequest;
 
@@ -37,7 +37,7 @@ namespace Routing
         }
 
         private static RequestHandlingData?
-            Match(SegmentNode<TResponse, TRequest> node,
+            Match(SegmentNode<TRequest, TResponse> node,
                 HttpMethod method,
                 ICollection<string> segments,
                 IDictionary<string, string> parameters)
@@ -68,7 +68,7 @@ namespace Routing
                        .FirstOrDefault(child => child != null);
         }
 
-        private static bool NodeMatchesSegment(SegmentNode<TResponse, TRequest> node, string segment) =>
+        private static bool NodeMatchesSegment(SegmentNode<TRequest, TResponse> node, string segment) =>
             !(node.Matcher is Literal { Identifier: var matchingSegment } && segment != matchingSegment);
 
         private static IDictionary<TKey, TValue> AddToDictionary<TKey, TValue>(IDictionary<TKey, TValue> dictionary, (TKey, TValue) keyValuePair)
@@ -81,7 +81,7 @@ namespace Routing
         }
 
 
-        public IRouteRegistry<TResponse, TRequest> Register(HttpMethod method, string route, HandleRequest<TResponse, TRequest> handleRequest)
+        public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest)
         {
             var segments = ParseRoute(route);
             var targetNode = segments
@@ -99,20 +99,20 @@ namespace Routing
             return this;
         }
 
-        private static SegmentNode<TResponse, TRequest> FindOrInsertNode(ICollection<SegmentNode<TResponse, TRequest>> collection, ISegmentVariant segment)
+        private static SegmentNode<TRequest, TResponse> FindOrInsertNode(ICollection<SegmentNode<TRequest, TResponse>> collection, ISegmentVariant segment)
         {
             var existingNode = collection.FirstOrDefault(element => element.Matcher.Equals(segment));
             return existingNode ?? InsertNode(collection, segment);
         }
 
-        private static SegmentNode<TResponse, TRequest> InsertNode(ICollection<SegmentNode<TResponse, TRequest>> collection, ISegmentVariant segment)
+        private static SegmentNode<TRequest, TResponse> InsertNode(ICollection<SegmentNode<TRequest, TResponse>> collection, ISegmentVariant segment)
         {
-            var newNode = new SegmentNode<TResponse, TRequest>(segment);
+            var newNode = new SegmentNode<TRequest, TResponse>(segment);
             collection.Add(newNode);
             return newNode;
         }
 
-        public IRouteRegistry<TResponse, TRequest> Remove(HttpMethod method, string route)
+        public IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route)
         {
             var targetNode = FindNodeByRoute(route);
             targetNode?.HandleRequestFunctions?.Remove(method);
@@ -120,10 +120,10 @@ namespace Routing
             return this;
         }
 
-        private SegmentNode<TResponse, TRequest>? FindNodeByRoute(string route)
+        private SegmentNode<TRequest, TResponse>? FindNodeByRoute(string route)
         {
             var segments = ParseRoute(route);
-            return segments.Aggregate<ISegmentVariant, SegmentNode<TResponse, TRequest>?>(_segmentTree, FindSegmentInNode);
+            return segments.Aggregate<ISegmentVariant, SegmentNode<TRequest, TResponse>?>(_segmentTree, FindSegmentInNode);
         }
 
         private IEnumerable<ISegmentVariant> ParseRoute(string route)
@@ -131,7 +131,7 @@ namespace Routing
             return _segmentParser.Parse(route) ?? throw new ArgumentException($"Invalid route: {route}", nameof(route));
         }
 
-        private static void RemoveUnusedNodes(SegmentNode<TResponse, TRequest> node, Action removeFromParent)
+        private static void RemoveUnusedNodes(SegmentNode<TRequest, TResponse> node, Action removeFromParent)
         {
             bool HasParameterChildren() => node.ParameterChildren.Any();
             bool HasLiteralChildren() => node.LiteralChildren.Any();
@@ -147,7 +147,7 @@ namespace Routing
             }
         }
 
-        private static void RemoveUnusedChildNodes(ICollection<SegmentNode<TResponse, TRequest>> children)
+        private static void RemoveUnusedChildNodes(ICollection<SegmentNode<TRequest, TResponse>> children)
         {
             var readonlyListOfChildren = children.ToList();
             foreach (var child in readonlyListOfChildren)
@@ -156,7 +156,7 @@ namespace Routing
             }
         }
 
-        private static SegmentNode<TResponse, TRequest>? FindSegmentInNode(SegmentNode<TResponse, TRequest>? node, ISegmentVariant segment)
+        private static SegmentNode<TRequest, TResponse>? FindSegmentInNode(SegmentNode<TRequest, TResponse>? node, ISegmentVariant segment)
         {
             return segment switch
             {
@@ -167,20 +167,20 @@ namespace Routing
             };
         }
 
-        private static SegmentNode<TResponse, TRequest>? FindSegmentInNodeList(IEnumerable<SegmentNode<TResponse, TRequest>>? node, ISegmentVariant segment)
+        private static SegmentNode<TRequest, TResponse>? FindSegmentInNodeList(IEnumerable<SegmentNode<TRequest, TResponse>>? node, ISegmentVariant segment)
         {
             return node?.FirstOrDefault(element => element.Matcher.Equals(segment));
         }
 
         private class RequestHandlingData
         {
-            public RequestHandlingData(HandleRequest<TResponse, TRequest> handleRequest, IDictionary<string, string> parameters)
+            public RequestHandlingData(HandleRequest<TRequest, TResponse> handleRequest, IDictionary<string, string> parameters)
             {
                 HandleRequest = handleRequest;
                 Parameters = parameters;
             }
 
-            public HandleRequest<TResponse, TRequest> HandleRequest { get; }
+            public HandleRequest<TRequest, TResponse> HandleRequest { get; }
 
             public IDictionary<string, string> Parameters { get; }
         }

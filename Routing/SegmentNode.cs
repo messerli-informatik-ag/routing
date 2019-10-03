@@ -7,7 +7,7 @@ using Routing.SegmentVariant;
 namespace Routing
 {
     [Equals]
-    internal class SegmentNode<TResponse, TRequest>
+    internal class SegmentNode<TRequest, TResponse>
     {
         public SegmentNode(ISegmentVariant matcher)
         {
@@ -16,17 +16,17 @@ namespace Routing
 
         public ISegmentVariant Matcher { get; }
 
-        public IDictionary<HttpMethod, HandleRequest<TResponse, TRequest>> HandleRequestFunctions { get; }
-            = new Dictionary<HttpMethod, HandleRequest<TResponse, TRequest>>();
+        public IDictionary<HttpMethod, HandleRequest<TRequest, TResponse>> HandleRequestFunctions { get; }
+            = new Dictionary<HttpMethod, HandleRequest<TRequest, TResponse>>();
 
-        public ICollection<SegmentNode<TResponse, TRequest>> LiteralChildren { get; }
-            = new OrderedSet<SegmentNode<TResponse, TRequest>>();
+        public ICollection<SegmentNode<TRequest, TResponse>> LiteralChildren { get; }
+            = new OrderedSet<SegmentNode<TRequest, TResponse>>();
 
-        public ICollection<SegmentNode<TResponse, TRequest>> ParameterChildren { get; }
-            = new OrderedSet<SegmentNode<TResponse, TRequest>>();
+        public ICollection<SegmentNode<TRequest, TResponse>> ParameterChildren { get; }
+            = new OrderedSet<SegmentNode<TRequest, TResponse>>();
 
-        public static bool operator ==(SegmentNode<TResponse, TRequest> left, SegmentNode<TResponse, TRequest> right) => Operator.Weave(left, right);
+        public static bool operator ==(SegmentNode<TRequest, TResponse> left, SegmentNode<TRequest, TResponse> right) => Operator.Weave(left, right);
 
-        public static bool operator !=(SegmentNode<TResponse, TRequest> left, SegmentNode<TResponse, TRequest> right) => Operator.Weave(left, right);
+        public static bool operator !=(SegmentNode<TRequest, TResponse> left, SegmentNode<TRequest, TResponse> right) => Operator.Weave(left, right);
     }
 }
