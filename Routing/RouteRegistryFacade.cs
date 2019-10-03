@@ -27,17 +27,22 @@ namespace Routing
         }
 
         public TResponse Route(HttpMethod method, string path, TRequest request)
-            => _router.Route(_segmentTree, method, path, request);
+        {
+            var endpoint = new Endpoint(method, path);
+            return _router.Route(_segmentTree, endpoint, request);
+        } 
 
         public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest)
         {
-            _routeRegistrar.Register(_segmentTree, method, route, handleRequest);
+            var endpoint = new Endpoint(method, route);
+            _routeRegistrar.Register(_segmentTree, endpoint, handleRequest);
             return this;
         }
         
         public IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route)
         {
-            _routeRemover.Remove(_segmentTree, method, route);
+            var endpoint = new Endpoint(method, route);
+            _routeRemover.Remove(_segmentTree, endpoint);
             return this;
         }
     }
