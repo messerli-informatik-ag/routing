@@ -10,7 +10,7 @@ namespace Routing
     {
         private readonly SegmentNode<TRequest, TResponse> _segmentTree
             = new SegmentNode<TRequest, TResponse>(new Root());
-        
+
         private readonly IRouteRemover<TRequest, TResponse> _routeRemover;
 
         private readonly IRouteRegistrar<TRequest, TResponse> _routeRegistrar;
@@ -30,7 +30,7 @@ namespace Routing
         {
             var endpoint = new Endpoint(method, path);
             return _router.Route(_segmentTree, endpoint, request);
-        } 
+        }
 
         public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest)
         {
@@ -38,7 +38,7 @@ namespace Routing
             _routeRegistrar.Register(_segmentTree, endpoint, handleRequest);
             return this;
         }
-        
+
         public IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route)
         {
             var endpoint = new Endpoint(method, route);

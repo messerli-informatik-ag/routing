@@ -14,7 +14,7 @@ namespace Routing
         private readonly LinkedList<T> _linkedList = new LinkedList<T>();
 
         public OrderedSet()
-            : this(EqualityComparer<T>.Default) 
+            : this(EqualityComparer<T>.Default)
         {
         }
 

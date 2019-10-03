@@ -28,7 +28,7 @@ namespace Routing.SegmentRegistryFacadeImplementation
             var segments = ParseRoute(_segmentParser, route);
             return segments.Aggregate<ISegmentVariant, SegmentNode<TRequest, TResponse>?>(segmentTree, FindSegmentInNode);
         }
-        
+
         private static void RemoveUnusedNodes(SegmentNode<TRequest, TResponse> node, Action removeFromParent)
         {
             bool HasParameterChildren() => node.ParameterChildren.Any();
