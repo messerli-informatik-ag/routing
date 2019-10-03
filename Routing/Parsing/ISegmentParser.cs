@@ -3,7 +3,7 @@ using Routing.SegmentVariant;
 
 namespace Routing.Parsing
 {
-    internal interface ISegmentParser
+    public interface ISegmentParser
     {
         IEnumerable<ISegmentVariant>? Parse(string route);
     }

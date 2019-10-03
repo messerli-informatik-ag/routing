@@ -2,7 +2,7 @@
 
 namespace Routing.Parsing
 {
-    internal interface IPathParser
+    public interface IPathParser
     {
         IEnumerable<string>? Parse(string path);
     }
