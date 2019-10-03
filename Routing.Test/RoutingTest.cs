@@ -7,7 +7,7 @@ using Funcky;
 
 namespace Routing.Test
 {
-    public class RoutingTest
+    public sealed class RoutingTest
     {
         private const string RegisteredRoute = "/registered";
 
@@ -83,13 +83,13 @@ namespace Routing.Test
         {
             var fallbackWasCalled = false;
 
-            Unit HandleFallbackRequest(Unit request, IDictionary<string, string> routeParams)
+            Unit HandleFallbackRequest(Unit request)
             {
                 fallbackWasCalled = true;
                 return new Unit();
             }
 
-            var routeRegistry = new RouteRegistry<Unit, Unit>(HandleFallbackRequest);
+            var routeRegistry = new RouteRegistryFacade<Unit, Unit>(HandleFallbackRequest);
             stateManipulation(routeRegistry);
 
             Assert.True(fallbackWasCalled);
@@ -98,7 +98,7 @@ namespace Routing.Test
         [Fact]
         public void CallsParentRoute()
         {
-            AssertRouteWasCalled(routeRegistry =>
+            AssertRouteWasCalled(RegisteredRoute, routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute, new Unit());
@@ -108,13 +108,13 @@ namespace Routing.Test
         [Fact]
         public void CallsRegisteredRootRoute()
         {
-            AssertRouteWasCalled(routeRegistry =>
+            AssertRouteWasCalled(RootRoute, routeRegistry =>
             {
                 routeRegistry.Route(HttpMethod.Get, RootRoute, new Unit());
-            }, RootRoute);
+            });
         }
 
-        private static void AssertRouteWasCalled(Action<IRouteRegistry<Unit, Unit>> stateManipulation, string registeredRoute = RegisteredRoute)
+        private static void AssertRouteWasCalled(string registeredRoute, Action < IRouteRegistry<Unit, Unit>> stateManipulation)
         {
             var routeWasCalled = false;
 
@@ -177,6 +177,7 @@ namespace Routing.Test
                 "foo",
                 "foo/",
                 "/foo/",
+                "//foo",
                 "/foo//",
                 "/foo/bar/",
                 "/foo//bar",
@@ -218,30 +219,39 @@ namespace Routing.Test
         public void ParsesRouteParams()
         {
             const string param = "foo";
-            AssertRouteWasCalledWithParams(routeRegistry =>
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams((NameKey, param)),
+                RegisteredRouteWithParam,
+                routeRegistry =>
             {
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit());
-            }, CreateExpectedParams((NameKey, param)), RegisteredRouteWithParam);
+            });
         }
 
         [Fact]
         public void ParsesNumericRouteParams()
         {
             const string param = "123";
-            AssertRouteWasCalledWithParams(routeRegistry =>
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams((NameKey, param)),
+                RegisteredRouteWithParam,
+                routeRegistry =>
             {
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, new Unit());
-            }, CreateExpectedParams((NameKey, param)), RegisteredRouteWithParam);
+            });
         }
 
         [Fact]
         public void ParsesRootRouteParams()
         {
             const string param = "foo";
-            AssertRouteWasCalledWithParams(routeRegistry =>
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams((NameKey, param)),
+                RootRouteWithParam,
+                routeRegistry =>
             {
                 routeRegistry.Route(HttpMethod.Get, "/" + param, new Unit());
-            }, CreateExpectedParams((NameKey, param)), RootRouteWithParam);
+            });
         }
 
         [Fact]
@@ -250,10 +260,62 @@ namespace Routing.Test
             const string firstParam = "foo";
             const string secondParam = "22";
 
-            AssertRouteWasCalledWithParams(routeRegistry =>
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams((NameKey, firstParam), (AgeKey, secondParam)),
+                RegisteredRouteWithParams,
+                routeRegistry =>
             {
                 routeRegistry.Route(HttpMethod.Get, $"{RegisteredRoute}/{firstParam}/ages/{secondParam}", new Unit());
-            }, CreateExpectedParams((NameKey, firstParam), (AgeKey, secondParam)), RegisteredRouteWithParams);
+            });
+        }
+
+        [Fact]
+        public static void RoutesParameterRouteWhenLiteralRootIsAvailable()
+        {
+            const string name = "foo";
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams((NameKey, name)),
+                RootRouteWithParam,
+                routeRegistry =>
+            {
+                routeRegistry
+                    .Register(HttpMethod.Get, RootRoute, FailOnRequest)
+                    .Route(HttpMethod.Get, $"/{name}", new Unit());
+            });
+        }
+
+        [Fact]
+        public static void LiteralsArePreferredFromLeftToRight()
+        {
+            var expectedRoute = $"{RegisteredRoute}/foo/{{bar}}/{{baz}}";
+            var moreLiteralRoute = $"{RegisteredRoute}/{{foo}}/bar/baz";
+
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams(("bar", "bar"), ("baz", "baz")),
+                expectedRoute,
+                routeRegistry =>
+            {
+                routeRegistry
+                    .Register(HttpMethod.Get, moreLiteralRoute, FailOnRequest)
+                    .Route(HttpMethod.Get, $"{RegisteredRoute}/foo/bar/baz", new Unit());
+            });
+        }
+
+        [Fact]
+        public static void FirstRegisteredAmbiguousRouteIsPreferred()
+        {
+            const string name = "foo";
+            var ambiguousRoute = $"{RegisteredRoute}/{{bar}}";
+
+            AssertRouteWasCalledWithParams(
+                CreateExpectedParams((NameKey, name)),
+                RegisteredRouteWithParam,
+                routeRegistry =>
+            {
+                routeRegistry
+                    .Register(HttpMethod.Get, ambiguousRoute, FailOnRequest)
+                    .Route(HttpMethod.Get, $"{RegisteredRoute}/{name}", new Unit());
+            });
         }
 
         [Fact]
@@ -330,9 +392,9 @@ namespace Routing.Test
         }
 
         private static void AssertRouteWasCalledWithParams(
-            Action<IRouteRegistry<Unit, Unit>> stateManipulation,
-            IDictionary<string,string> expectedRouteParams,
-            string registeredRoute)
+            IDictionary<string, string> expectedRouteParams,
+            string registeredRoute,
+            Action<IRouteRegistry<Unit, Unit>> stateManipulation)
         {
             var routeWasCalled = false;
 
@@ -351,34 +413,19 @@ namespace Routing.Test
             Assert.True(routeWasCalled);
         }
 
-        [Fact]
-        public static void ThrowsOnAmbiguousRootRoute()
-        {
-            var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RootRoute, FailOnRequest);
-
-            Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, RootRouteWithParam, FailOnRequest));
-        }
-
-        [Fact]
-        public static void ThrowsOnAmbiguousSubRoute()
-        {
-            var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest);
-
-            Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, $"{RegisteredRouteWithParam}/ages/12", FailOnRequest));
-        }
-
         private static IRouteRegistry<Unit, Unit> CreateRouteRegistry()
         {
-            return new RouteRegistry<Unit, Unit>(FailOnRequest);
+            return new RouteRegistryFacade<Unit, Unit>(FailOnFallbackRequest);
+        }
+
+        private static Unit FailOnFallbackRequest(Unit request)
+        {
+            throw new InvalidOperationException("Fallback request handler was unexpectedly called");
         }
 
         private static Unit FailOnRequest(Unit request, IDictionary<string, string> routeParams)
         {
-            throw new InvalidOperationException("Fallback request handler was unexpectedly called");
+            throw new InvalidOperationException("Request handler was unexpectedly called");
         }
 
         private static Dictionary<string, string> CreateExpectedParams(params (string, string)[] keyValuePairs)
