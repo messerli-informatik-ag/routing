@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Routing.AspNetCore
 {
-    public delegate void ApplyResponseToContext<in TResponse>(HttpContext context, TResponse response);
+    public delegate Task ApplyResponseToContext<in TResponse>(HttpContext context, TResponse response);
 
     public delegate TRequest MapContextToRequest<out TRequest>(HttpContext context);
 
@@ -20,6 +21,7 @@ namespace Routing.AspNetCore
         private readonly ApplyResponseToContext<TResponse> _applyResponseToContext;
 
         public RoutingMiddleware(
+            RequestDelegate next,
             ILogger logger,
             IRouteRegistry<TResponse, TRequest> routeRegistry,
             MapContextToRequest<TRequest> mapContextToRequest,
@@ -31,16 +33,14 @@ namespace Routing.AspNetCore
             _applyResponseToContext = applyResponseToContext;
         }
 
-        public Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context)
         {
             var method = new HttpMethod(context.Request.Method);
             var request = _mapContextToRequest(context);
 
             var response = _routeRegistry.Route(method, context.Request.Path, request);
 
-            _applyResponseToContext(context, response);
-
-            return Task.CompletedTask;
+            await _applyResponseToContext(context, response);
         }
     }
 }
