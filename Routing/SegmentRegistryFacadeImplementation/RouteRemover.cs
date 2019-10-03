@@ -17,10 +17,10 @@ namespace Routing.SegmentRegistryFacadeImplementation
             _segmentParser = segmentParser;
         }
 
-        public void Remove(SegmentNode<TRequest, TResponse> segmentTree, HttpMethod method, string route)
+        public void Remove(SegmentNode<TRequest, TResponse> segmentTree, Endpoint endpoint)
         {
-            var targetNode = FindNodeByRoute(segmentTree, route);
-            targetNode?.HandleRequestFunctions?.Remove(method);
+            var targetNode = FindNodeByRoute(segmentTree, endpoint.Route);
+            targetNode?.HandleRequestFunctions?.Remove(endpoint.Method);
             RemoveUnusedNodes(segmentTree, () => { });
         }
 
