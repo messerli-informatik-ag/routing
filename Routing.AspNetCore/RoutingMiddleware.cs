@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -37,9 +38,22 @@ namespace Routing.AspNetCore
             var method = new HttpMethod(context.Request.Method);
             var request = _mapContextToRequest(context);
 
-            var response = _routeRegistry.Route(method, context.Request.Path, request);
-
-            await _applyResponseToContext(context, response);
+            try
+            {
+                var response = _routeRegistry.Route(method, context.Request.Path, request);
+                try
+                {
+                    await _applyResponseToContext(context, response);
+                }
+                catch (Exception exception)
+                {
+                    _logger.ErrorWhileConvertingResponseToContext(exception);
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.ErrorWhileRouting(exception);
+            }
         }
     }
 }
