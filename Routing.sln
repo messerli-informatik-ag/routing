@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.152
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{6BF3A986-8B23-4735-8E75-751AC9742EC2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6BF3A986-8B23-4735-8E75-751AC9742EC2}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.travis.yml = .travis.yml
+		license_apache.txt = license_apache.txt
+		license_mit.txt = license_mit.txt
 		paket.dependencies = paket.dependencies
+		readme.md = readme.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Routing", "Routing\Routing.csproj", "{071ED2F9-4285-4CCB-A3E2-3A588CFA1B0E}"
@@ -14,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Routing.Test", "Routing.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Routing.AspNetCore", "Routing.AspNetCore\Routing.AspNetCore.csproj", "{D902401B-3477-4538-B331-4E227FD17770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Routing.AspNetCore.Test", "Routing.AspNetCore.Test\Routing.AspNetCore.Test.csproj", "{D98E05BB-4383-4249-97A7-7368C4A978C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Routing.AspNetCore.Test", "Routing.AspNetCore.Test\Routing.AspNetCore.Test.csproj", "{D98E05BB-4383-4249-97A7-7368C4A978C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
