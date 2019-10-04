@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace Routing.AspNetCore
+namespace Messerli.Routing.AspNetCore
 {
     internal static class LoggerExtension
     {

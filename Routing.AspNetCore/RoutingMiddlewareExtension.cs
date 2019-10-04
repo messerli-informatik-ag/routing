@@ -1,9 +1,8 @@
 ﻿using System;
-using Messerli.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 
-namespace Routing.AspNetCore
+namespace Messerli.Routing.AspNetCore
 {
     public static class RoutingMiddlewareExtension
     {

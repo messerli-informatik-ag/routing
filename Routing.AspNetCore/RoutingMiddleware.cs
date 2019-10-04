@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Messerli.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Routing.AspNetCore
+namespace Messerli.Routing.AspNetCore
 {
     public delegate Task ApplyResponseToContext<in TResponse>(HttpContext context, TResponse response);
 

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Messerli.Routing;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
 
-namespace Routing.AspNetCore.Test
+namespace Messerli.Routing.AspNetCore.Test
 {
     public class MiddlewareTest
     {
