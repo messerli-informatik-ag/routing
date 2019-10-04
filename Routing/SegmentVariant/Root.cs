@@ -3,7 +3,7 @@
 namespace Messerli.Routing.SegmentVariant
 {
     [Equals]
-    internal sealed class Root : ISegmentVariant
+    public sealed class Root : ISegmentVariant
     {
         public static bool operator ==(Root left, Root right) => Operator.Weave(left, right);
 

@@ -3,7 +3,7 @@ using Messerli.Routing.SegmentVariant;
 
 namespace Messerli.Routing.Parsing
 {
-    internal interface ISegmentParser
+    public interface ISegmentParser
     {
         IEnumerable<ISegmentVariant>? Parse(string route);
     }

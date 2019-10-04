@@ -6,7 +6,7 @@ using Messerli.Routing.SegmentVariant;
 
 namespace Messerli.Routing
 {
-    public sealed class RouteRegistryFacade<TRequest, TResponse> : IRouteRegistry<TRequest, TResponse>
+    internal class RouteRegistryFacade<TRequest, TResponse> : IRouteRegistry<TRequest, TResponse>
     {
         private readonly SegmentNode<TRequest, TResponse> _segmentTree
             = new SegmentNode<TRequest, TResponse>(new Root());
@@ -17,13 +17,14 @@ namespace Messerli.Routing
 
         private readonly IRouter<TRequest, TResponse> _router;
 
-        public RouteRegistryFacade(Func<TRequest, TResponse> handleFallbackRequest)
+        public RouteRegistryFacade(
+            IRouteRemover<TRequest, TResponse> routeRemover,
+            IRouteRegistrar<TRequest, TResponse> routeRegistrar,
+            IRouter<TRequest, TResponse> router)
         {
-            var segmentParser = new SegmentParser();
-            _routeRemover = new RouteRemover<TRequest, TResponse>(segmentParser);
-            _routeRegistrar = new RouteRegistrar<TRequest, TResponse>(segmentParser);
-            var pathParser = new PathParser();
-            _router = new Router<TRequest, TResponse>(pathParser, handleFallbackRequest);
+            _routeRemover = routeRemover;
+            _routeRegistrar = routeRegistrar;
+            _router = router;
         }
 
         public TResponse Route(HttpMethod method, string path, TRequest request)
