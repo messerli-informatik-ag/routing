@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Routing.Parsing
+namespace Messerli.Routing.Parsing
 {
     internal interface IPathParser
     {

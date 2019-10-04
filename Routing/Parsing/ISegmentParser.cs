@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Routing.SegmentVariant;
+using Messerli.Routing.SegmentVariant;
 
-namespace Routing.Parsing
+namespace Messerli.Routing.Parsing
 {
     internal interface ISegmentParser
     {

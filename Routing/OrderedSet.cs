@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Routing
+namespace Messerli.Routing
 {
     /// <summary>
     /// <a href="https://stackoverflow.com/a/17853085/5903309">Source</a>.

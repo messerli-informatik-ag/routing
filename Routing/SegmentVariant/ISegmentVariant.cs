@@ -1,4 +1,4 @@
-﻿namespace Routing.SegmentVariant
+﻿namespace Messerli.Routing.SegmentVariant
 {
     internal interface ISegmentVariant
     {
