@@ -46,13 +46,13 @@ namespace Messerli.Routing
             IRouter<TRequest, TResponse> router) =>
             new RouteRegistryBuilder<TRequest, TResponse>(router);
 
-        public RouteRegistryBuilder<TRequest, TResponse> SetRouteRemover(IRouteRemover<TRequest, TResponse> routeRemover) =>
+        public RouteRegistryBuilder<TRequest, TResponse> RouteRemover(IRouteRemover<TRequest, TResponse> routeRemover) =>
             ShallowClone(routeRemover: routeRemover);
 
-        public RouteRegistryBuilder<TRequest, TResponse> SetRouteRegistrar(IRouteRegistrar<TRequest, TResponse> routeRegistrar) =>
+        public RouteRegistryBuilder<TRequest, TResponse> RouteRegistrar(IRouteRegistrar<TRequest, TResponse> routeRegistrar) =>
             ShallowClone(routeRegistrar: routeRegistrar);
 
-        public RouteRegistryBuilder<TRequest, TResponse> SetSegmentParser(ISegmentParser segmentParser) =>
+        public RouteRegistryBuilder<TRequest, TResponse> SegmentParser(ISegmentParser segmentParser) =>
             ShallowClone(segmentParser: segmentParser);
 
         public IRouteRegistry<TRequest, TResponse> Build()
