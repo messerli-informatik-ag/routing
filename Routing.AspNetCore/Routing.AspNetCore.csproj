@@ -6,7 +6,17 @@
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <AssemblyName>Messerli.Routing.AspNetCore</AssemblyName>
         <RootNamespace>Messerli.Routing.AspNetCore</RootNamespace>
+        <Version>0.1.0</Version>
+        <RepositoryUrl>https://github.com/messerli-informatik-ag/routing</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageId>Messerli.Routing.AspNetCore</PackageId>
+        <PackageTags>http routing aspnetcore</PackageTags>
+        <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
+        <Authors>Jan Nils Ferner, Ruben Schmidmeister</Authors>
+        <Copyright>© Messerli Informatik AG. All rights reserved.</Copyright>
+        <Description></Description>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Routing\Routing.csproj" />
