@@ -7,6 +7,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <IsPackable>false</IsPackable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Messerli.Routing.Test</RootNamespace>
         <AssemblyName>Messerli.Routing.Test</AssemblyName>
     </PropertyGroup>
     <ItemGroup>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Routing.Parsing;
-using Routing.SegmentVariant;
+using Messerli.Routing.Parsing;
+using Messerli.Routing.SegmentVariant;
 
-namespace Routing.SegmentRegistryFacadeImplementation
+namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
     internal static class ParsingUtility
     {

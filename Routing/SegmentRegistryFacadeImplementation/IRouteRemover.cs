@@ -1,4 +1,4 @@
-﻿namespace Routing.SegmentRegistryFacadeImplementation
+﻿namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
     internal interface IRouteRemover<TRequest, TResponse>
     {

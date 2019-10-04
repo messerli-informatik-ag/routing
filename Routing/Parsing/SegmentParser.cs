@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Routing.SegmentVariant;
-using static Routing.Parsing.PathParsing;
+using Messerli.Routing.SegmentVariant;
+using static Messerli.Routing.Parsing.PathParsing;
 
-namespace Routing.Parsing
+namespace Messerli.Routing.Parsing
 {
     internal sealed class SegmentParser : ISegmentParser
     {

@@ -5,7 +5,7 @@ using System.Net.Http;
 using Funcky;
 using Xunit;
 
-namespace Routing.Test
+namespace Messerli.Routing.Test
 {
     public sealed class RoutingTest
     {

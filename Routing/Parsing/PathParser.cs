@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using static Routing.Parsing.PathParsing;
+using static Messerli.Routing.Parsing.PathParsing;
 
-namespace Routing.Parsing
+namespace Messerli.Routing.Parsing
 {
     internal sealed class PathParser : IPathParser
     {

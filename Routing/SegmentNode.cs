@@ -2,9 +2,9 @@
 
 using System.Collections.Generic;
 using System.Net.Http;
-using Routing.SegmentVariant;
+using Messerli.Routing.SegmentVariant;
 
-namespace Routing
+namespace Messerli.Routing
 {
     [Equals]
     internal sealed class SegmentNode<TRequest, TResponse>

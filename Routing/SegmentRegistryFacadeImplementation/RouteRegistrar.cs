@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Routing.Parsing;
-using Routing.SegmentVariant;
+using Messerli.Routing.Parsing;
+using Messerli.Routing.SegmentVariant;
 
-namespace Routing.SegmentRegistryFacadeImplementation
+namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
     internal sealed class RouteRegistrar<TRequest, TResponse> : IRouteRegistrar<TRequest, TResponse>
     {
