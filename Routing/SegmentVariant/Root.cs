@@ -1,6 +1,6 @@
 ﻿#pragma warning disable 660,661
 
-namespace Routing.SegmentVariant
+namespace Messerli.Routing.SegmentVariant
 {
     [Equals]
     public sealed class Root : ISegmentVariant

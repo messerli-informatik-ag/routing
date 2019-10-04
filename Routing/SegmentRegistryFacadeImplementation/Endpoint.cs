@@ -2,7 +2,7 @@
 
 using System.Net.Http;
 
-namespace Routing.SegmentRegistryFacadeImplementation
+namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
     [Equals]
     public sealed class Endpoint

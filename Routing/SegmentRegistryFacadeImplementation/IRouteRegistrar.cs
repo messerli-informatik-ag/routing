@@ -1,4 +1,4 @@
-﻿namespace Routing.SegmentRegistryFacadeImplementation
+﻿namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
     public interface IRouteRegistrar<TRequest, TResponse>
     {

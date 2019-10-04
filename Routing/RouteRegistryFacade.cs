@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net.Http;
-using Routing.Parsing;
-using Routing.SegmentRegistryFacadeImplementation;
-using Routing.SegmentVariant;
+using Messerli.Routing.Parsing;
+using Messerli.Routing.SegmentRegistryFacadeImplementation;
+using Messerli.Routing.SegmentVariant;
 
-namespace Routing
+namespace Messerli.Routing
 {
     internal class RouteRegistryFacade<TRequest, TResponse> : IRouteRegistry<TRequest, TResponse>
     {

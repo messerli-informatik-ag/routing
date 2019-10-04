@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Routing.Parsing
+namespace Messerli.Routing.Parsing
 {
     internal static class PathParsing
     {
