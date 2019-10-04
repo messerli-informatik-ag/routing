@@ -8,15 +8,27 @@ namespace Routing
     {
         private readonly IRouter<TRequest, TResponse> _router;
 
-        private IRouteRemover<TRequest, TResponse>? _routeRemover;
+        private readonly IRouteRemover<TRequest, TResponse>? _routeRemover;
 
-        private IRouteRegistrar<TRequest, TResponse>? _routeRegistrar;
+        private readonly IRouteRegistrar<TRequest, TResponse>? _routeRegistrar;
 
-        private ISegmentParser? _segmentParser;
+        private readonly ISegmentParser? _segmentParser;
 
         private RouteRegistryBuilder(IRouter<TRequest, TResponse> router)
         {
             _router = router;
+        }
+
+        private RouteRegistryBuilder(
+            IRouter<TRequest, TResponse> router,
+            IRouteRemover<TRequest, TResponse>? routeRemover,
+            IRouteRegistrar<TRequest, TResponse>? routeRegistrar,
+            ISegmentParser? segmentParser)
+        {
+            _router = router;
+            _routeRemover = routeRemover;
+            _routeRegistrar = routeRegistrar;
+            _segmentParser = segmentParser;
         }
 
         public static RouteRegistryBuilder<TRequest, TResponse> WithFallbackRequestHandler(
@@ -34,23 +46,14 @@ namespace Routing
             IRouter<TRequest, TResponse> router) =>
             new RouteRegistryBuilder<TRequest, TResponse>(router);
 
-        public RouteRegistryBuilder<TRequest, TResponse> SetRouteRemover(IRouteRemover<TRequest, TResponse> routeRemover)
-        {
-            _routeRemover = routeRemover;
-            return this;
-        }
+        public RouteRegistryBuilder<TRequest, TResponse> SetRouteRemover(IRouteRemover<TRequest, TResponse> routeRemover) =>
+            ShallowClone(routeRemover: routeRemover);
 
-        public RouteRegistryBuilder<TRequest, TResponse> SetRouteRegistrar(IRouteRegistrar<TRequest, TResponse> routeRegistrar)
-        {
-            _routeRegistrar = routeRegistrar;
-            return this;
-        }
+        public RouteRegistryBuilder<TRequest, TResponse> SetRouteRegistrar(IRouteRegistrar<TRequest, TResponse> routeRegistrar) =>
+            ShallowClone(routeRegistrar: routeRegistrar);
 
-        public RouteRegistryBuilder<TRequest, TResponse> SetSegmentParser(ISegmentParser segmentParser)
-        {
-            _segmentParser = segmentParser;
-            return this;
-        }
+        public RouteRegistryBuilder<TRequest, TResponse> SetSegmentParser(ISegmentParser segmentParser) =>
+            ShallowClone(segmentParser: segmentParser);
 
         public IRouteRegistry<TRequest, TResponse> Build()
         {
@@ -63,6 +66,18 @@ namespace Routing
                 routeRemover,
                 routeRegistrar,
                 _router);
+        }
+
+        private RouteRegistryBuilder<TRequest, TResponse> ShallowClone(
+            IRouteRemover<TRequest, TResponse>? routeRemover = null,
+            IRouteRegistrar<TRequest, TResponse>? routeRegistrar = null,
+            ISegmentParser? segmentParser = null)
+        {
+            return new RouteRegistryBuilder<TRequest, TResponse>(
+                _router,
+                routeRemover ?? _routeRemover,
+                routeRegistrar ?? _routeRegistrar,
+                segmentParser ?? _segmentParser);
         }
     }
 }
