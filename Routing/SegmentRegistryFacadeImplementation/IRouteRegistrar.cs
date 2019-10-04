@@ -1,6 +1,6 @@
 ﻿namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
-    public interface IRouteRegistrar<TRequest, TResponse>
+    internal interface IRouteRegistrar<TRequest, TResponse>
     {
         void Register(
             SegmentNode<TRequest, TResponse> segmentTree,

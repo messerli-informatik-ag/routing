@@ -7,7 +7,7 @@ using Messerli.Routing.SegmentVariant;
 namespace Messerli.Routing
 {
     [Equals]
-    public sealed class SegmentNode<TRequest, TResponse>
+    internal sealed class SegmentNode<TRequest, TResponse>
     {
         public SegmentNode(ISegmentVariant matcher)
         {

@@ -8,10 +8,6 @@ namespace Messerli.Routing
     {
         private readonly IRouter<TRequest, TResponse> _router;
 
-        private readonly IRouteRemover<TRequest, TResponse>? _routeRemover;
-
-        private readonly IRouteRegistrar<TRequest, TResponse>? _routeRegistrar;
-
         private readonly ISegmentParser? _segmentParser;
 
         private RouteRegistryBuilder(IRouter<TRequest, TResponse> router)
@@ -21,13 +17,9 @@ namespace Messerli.Routing
 
         private RouteRegistryBuilder(
             IRouter<TRequest, TResponse> router,
-            IRouteRemover<TRequest, TResponse>? routeRemover,
-            IRouteRegistrar<TRequest, TResponse>? routeRegistrar,
             ISegmentParser? segmentParser)
         {
             _router = router;
-            _routeRemover = routeRemover;
-            _routeRegistrar = routeRegistrar;
             _segmentParser = segmentParser;
         }
 
@@ -38,19 +30,9 @@ namespace Messerli.Routing
         public static RouteRegistryBuilder<TRequest, TResponse> WithCustomPathParserAndFallbackRequestHandler(
            IPathParser pathParser,
            Func<TRequest, TResponse> handleFallbackRequest) =>
-            WithCustomRouter(new Router<TRequest, TResponse>(
+            new RouteRegistryBuilder<TRequest, TResponse>(new Router<TRequest, TResponse>(
                 pathParser,
                 handleFallbackRequest));
-
-        public static RouteRegistryBuilder<TRequest, TResponse> WithCustomRouter(
-            IRouter<TRequest, TResponse> router) =>
-            new RouteRegistryBuilder<TRequest, TResponse>(router);
-
-        public RouteRegistryBuilder<TRequest, TResponse> RouteRemover(IRouteRemover<TRequest, TResponse> routeRemover) =>
-            ShallowClone(routeRemover: routeRemover);
-
-        public RouteRegistryBuilder<TRequest, TResponse> RouteRegistrar(IRouteRegistrar<TRequest, TResponse> routeRegistrar) =>
-            ShallowClone(routeRegistrar: routeRegistrar);
 
         public RouteRegistryBuilder<TRequest, TResponse> SegmentParser(ISegmentParser segmentParser) =>
             ShallowClone(segmentParser: segmentParser);
@@ -59,8 +41,8 @@ namespace Messerli.Routing
         {
             var segmentParser = _segmentParser ?? new SegmentParser();
 
-            var routeRemover = _routeRemover ?? new RouteRemover<TRequest, TResponse>(segmentParser);
-            var routeRegistrar = _routeRegistrar ?? new RouteRegistrar<TRequest, TResponse>(segmentParser);
+            var routeRemover = new RouteRemover<TRequest, TResponse>(segmentParser);
+            var routeRegistrar = new RouteRegistrar<TRequest, TResponse>(segmentParser);
 
             return new RouteRegistryFacade<TRequest, TResponse>(
                 routeRemover,
@@ -69,14 +51,10 @@ namespace Messerli.Routing
         }
 
         private RouteRegistryBuilder<TRequest, TResponse> ShallowClone(
-            IRouteRemover<TRequest, TResponse>? routeRemover = null,
-            IRouteRegistrar<TRequest, TResponse>? routeRegistrar = null,
             ISegmentParser? segmentParser = null)
         {
             return new RouteRegistryBuilder<TRequest, TResponse>(
                 _router,
-                routeRemover ?? _routeRemover,
-                routeRegistrar ?? _routeRegistrar,
                 segmentParser ?? _segmentParser);
         }
     }

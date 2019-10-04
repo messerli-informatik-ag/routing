@@ -5,7 +5,7 @@ using System.Net.Http;
 namespace Messerli.Routing.SegmentRegistryFacadeImplementation
 {
     [Equals]
-    public sealed class Endpoint
+    internal sealed class Endpoint
     {
         public Endpoint(HttpMethod method, string route)
         {
