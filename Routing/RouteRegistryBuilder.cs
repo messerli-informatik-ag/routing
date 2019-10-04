@@ -1,8 +1,8 @@
 ﻿using System;
-using Routing.Parsing;
-using Routing.SegmentRegistryFacadeImplementation;
+using Messerli.Routing.Parsing;
+using Messerli.Routing.SegmentRegistryFacadeImplementation;
 
-namespace Routing
+namespace Messerli.Routing
 {
     public class RouteRegistryBuilder<TRequest, TResponse>
     {
