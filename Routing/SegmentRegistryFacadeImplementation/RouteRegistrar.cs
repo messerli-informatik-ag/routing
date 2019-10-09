@@ -18,8 +18,7 @@ namespace Messerli.Routing.SegmentRegistryFacadeImplementation
         public void Register(SegmentNode<TRequest, TResponse> segmentTree, Endpoint endpoint, HandleRequest<TRequest, TResponse> handleRequest)
         {
             var segments = ParseRoute(endpoint);
-            var targetNode = FindTargetNode(segmentTree, segments);
-            RegisterRequestHandlerOnNode(endpoint, handleRequest, targetNode);
+            RegisterRequestHandler(segmentTree, endpoint, handleRequest, segments);
         }
 
         public void Register(
@@ -29,15 +28,22 @@ namespace Messerli.Routing.SegmentRegistryFacadeImplementation
             ValidateParameterKeys validateParameterKeys)
         {
             var segments = ParseRoute(endpoint).ToList();
-
             RunParameterKeyValidation(validateParameterKeys, segments);
-
-            var targetNode = FindTargetNode(segmentTree, segments);
-            RegisterRequestHandlerOnNode(endpoint, handleRequest, targetNode);
+            RegisterRequestHandler(segmentTree, endpoint, handleRequest, segments);
         }
 
         private IEnumerable<ISegmentVariant> ParseRoute(Endpoint endpoint) =>
             ParsingUtility.ParseRoute(_segmentParser, endpoint.Route);
+
+        private static void RegisterRequestHandler(
+            SegmentNode<TRequest, TResponse> segmentTree,
+            Endpoint endpoint,
+            HandleRequest<TRequest, TResponse> handleRequest,
+            IEnumerable<ISegmentVariant> segments)
+        {
+            var targetNode = FindTargetNode(segmentTree, segments);
+            RegisterRequestHandlerOnNode(endpoint, handleRequest, targetNode);
+        }
 
         private static SegmentNode<TRequest, TResponse> FindTargetNode(SegmentNode<TRequest, TResponse> segmentTree, IEnumerable<ISegmentVariant> segments) =>
             segments
