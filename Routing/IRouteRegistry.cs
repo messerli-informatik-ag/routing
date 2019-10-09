@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using RouteParams = System.Collections.Generic.IDictionary<string, string>;
 
 namespace Messerli.Routing
