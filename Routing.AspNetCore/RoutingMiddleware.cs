@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Messerli.Routing.AspNetCore
 {
@@ -12,8 +10,6 @@ namespace Messerli.Routing.AspNetCore
 
     internal class RoutingMiddleware<TRequest, TResponse>
     {
-        private readonly ILogger _logger;
-
         private readonly IRouteRegistry<TRequest, TResponse> _routeRegistry;
 
         private readonly MapContextToRequest<TRequest> _mapContextToRequest;
@@ -22,12 +18,10 @@ namespace Messerli.Routing.AspNetCore
 
         public RoutingMiddleware(
             RequestDelegate next,
-            ILogger logger,
             IRouteRegistry<TRequest, TResponse> routeRegistry,
             MapContextToRequest<TRequest> mapContextToRequest,
             ApplyResponseToContext<TResponse> applyResponseToContext)
         {
-            _logger = logger;
             _routeRegistry = routeRegistry;
             _mapContextToRequest = mapContextToRequest;
             _applyResponseToContext = applyResponseToContext;
@@ -39,27 +33,8 @@ namespace Messerli.Routing.AspNetCore
             var endpoint = new Endpoint(method, context.Request.Path);
             var request = _mapContextToRequest(context);
 
-            try
-            {
-                var response = _routeRegistry.Route(endpoint, request);
-                await ApplyResponseToContext(context, response);
-            }
-            catch (Exception exception)
-            {
-                _logger.ErrorWhileRouting(exception);
-            }
-        }
-
-        private async Task ApplyResponseToContext(HttpContext context, TResponse response)
-        {
-            try
-            {
-                await _applyResponseToContext(context, response);
-            }
-            catch (Exception exception)
-            {
-                _logger.ErrorWhileConvertingResponseToContext(exception);
-            }
+            var response = _routeRegistry.Route(endpoint, request);
+            await _applyResponseToContext(context, response);
         }
     }
 }

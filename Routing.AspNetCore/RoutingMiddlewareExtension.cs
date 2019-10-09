@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Builder;
 
 namespace Messerli.Routing.AspNetCore
 {
@@ -12,21 +10,10 @@ namespace Messerli.Routing.AspNetCore
             MapContextToRequest<TRequest> mapContextToRequest,
             ApplyResponseToContext<TResponse> applyResponseToContext)
         {
-            var loggerFactory = ResolveApplicationService<ILoggerFactory>(applicationBuilder);
-            var logger = loggerFactory.CreateLogger<RoutingMiddleware<TRequest, TResponse>>();
             return applicationBuilder.UseMiddleware<RoutingMiddleware<TRequest, TResponse>>(
-                logger,
                 routeRegistry,
                 mapContextToRequest,
                 applyResponseToContext);
-        }
-
-        private static T ResolveApplicationService<T>(IApplicationBuilder applicationBuilder)
-            where T : class
-        {
-            var type = typeof(T);
-            return applicationBuilder.ApplicationServices.GetService(type) as T
-                   ?? throw new NullReferenceException($"Unable to resolve {type.Name}");
         }
     }
 }
