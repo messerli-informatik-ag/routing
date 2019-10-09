@@ -335,8 +335,10 @@ namespace Messerli.Routing.Test
         public void ThrowsWhenValidatingRouteWithNoParameters()
         {
             var routeRegistry = CreateRouteRegistry();
-            Assert.Throws<ArgumentException>(() =>
+            var exception = Assert.Throws<ArgumentException>(() =>
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest, FailOnValidation));
+
+            Assert.Null(exception.InnerException);
         }
 
         [Fact]
@@ -344,12 +346,11 @@ namespace Messerli.Routing.Test
         {
             var validationWasCalled = false;
 
-            bool ValidateParameters(IEnumerable<string> parameters)
+            void ValidateParameters(IEnumerable<string> parameters)
             {
                 var expectedParameters = new[] { NameKey, AgeKey };
                 Assert.Equal(expectedParameters, parameters);
                 validationWasCalled = true;
-                return true;
             }
 
             var routeRegistry = CreateRouteRegistry();
@@ -359,14 +360,14 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void ThrowsOnFailedValidation()
+        public void WrapsExceptionOfFailedValidation()
         {
             var routeRegistry = CreateRouteRegistry();
 
-            static bool FailValidation(IEnumerable<string> parameters) => false;
+            var exception = Assert.Throws<ArgumentException>(() =>
+                routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest, FailOnValidation));
 
-            Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest, FailValidation));
+            Assert.IsType<InvalidOperationException>(exception.InnerException);
         }
 
         public static TheoryData<string> InvalidParams()
@@ -470,9 +471,9 @@ namespace Messerli.Routing.Test
             throw new InvalidOperationException("Request handler was unexpectedly called");
         }
 
-        private static bool FailOnValidation(IEnumerable<string> parameters)
+        private static void FailOnValidation(IEnumerable<string> parameters)
         {
-            throw new InvalidOperationException("Parameter validation was unexpectedly called");
+            throw new InvalidOperationException("Parameter validation has failed");
         }
 
         private static Dictionary<string, string> CreateExpectedParams(params (string, string)[] keyValuePairs)
