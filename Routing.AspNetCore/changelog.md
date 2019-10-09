@@ -8,4 +8,4 @@
 
 ## Unreleased
 - Errors thrown by request handlers are no longer caught and logged,
-  but propagated.
+  but propagated instead.
