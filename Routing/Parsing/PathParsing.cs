@@ -15,7 +15,7 @@ namespace Messerli.Routing.Parsing
             }
 
             const int lengthOfRoot = 1;
-            var trimmedPath = path.Substring(lengthOfRoot);
+            var trimmedPath = path.Substring(lengthOfRoot).TrimEnd(SegmentDelimiterToken);
             return trimmedPath.Any()
                 ? trimmedPath.Split(SegmentDelimiterToken)
                 : new string[0];
