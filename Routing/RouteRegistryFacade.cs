@@ -31,33 +31,28 @@ namespace Messerli.Routing
         public TResponse CallFallbackHandler(TRequest request) =>
             _router.CallFallbackHandler(request);
 
-        public TResponse Route(HttpMethod method, string path, TRequest request)
+        public TResponse Route(Endpoint endpoint, TRequest request)
         {
-            var endpoint = new Endpoint(method, path);
             return _router.Route(_segmentTree, endpoint, request);
         }
 
-        public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest)
+        public IRouteRegistry<TRequest, TResponse> Register(Endpoint endpoint, HandleRequest<TRequest, TResponse> handleRequest)
         {
-            var endpoint = new Endpoint(method, route);
             _routeRegistrar.Register(_segmentTree, endpoint, handleRequest);
             return this;
         }
 
         public IRouteRegistry<TRequest, TResponse> Register(
-            HttpMethod method,
-            string route,
+            Endpoint endpoint,
             HandleRequest<TRequest, TResponse> handleRequest,
             ValidateParameterKeys validateParameterKeys)
         {
-            var endpoint = new Endpoint(method, route);
             _routeRegistrar.Register(_segmentTree, endpoint, handleRequest, validateParameterKeys);
             return this;
         }
 
-        public IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route)
+        public IRouteRegistry<TRequest, TResponse> Remove(Endpoint endpoint)
         {
-            var endpoint = new Endpoint(method, route);
             _routeRemover.Remove(_segmentTree, endpoint);
             return this;
         }

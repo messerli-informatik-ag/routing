@@ -31,7 +31,7 @@ namespace Messerli.Routing.Test
         public void CallsFallbackRequestHandlerWhenNoOthersAreRegistered()
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
-                    routeRegistry.Route(HttpMethod.Get, "/foo", default));
+                    routeRegistry.Route(new Endpoint(HttpMethod.Get, "/foo"), default));
         }
 
         [Fact]
@@ -39,8 +39,8 @@ namespace Messerli.Routing.Test
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Get, "/bar", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, "/foo", default);
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, "/bar"), FailOnRequest);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, "/foo"), default);
             });
         }
 
@@ -49,8 +49,8 @@ namespace Messerli.Routing.Test
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Post, "/foo", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, "/foo", default);
+                routeRegistry.Register(new Endpoint(HttpMethod.Post, "/foo"), FailOnRequest);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, "/foo"), default);
             });
         }
 
@@ -60,9 +60,9 @@ namespace Messerli.Routing.Test
             AssertCallToFallbackRequestHandler(routeRegistry =>
             {
                 const string route = "/foo";
-                routeRegistry.Register(HttpMethod.Get, route, FailOnRequest);
-                routeRegistry.Remove(HttpMethod.Get, route);
-                routeRegistry.Route(HttpMethod.Get, route, default);
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, route), FailOnRequest);
+                routeRegistry.Remove(new Endpoint(HttpMethod.Get, route));
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, route), default);
             });
         }
 
@@ -71,8 +71,8 @@ namespace Messerli.Routing.Test
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/foo", default);
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute), FailOnRequest);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RegisteredRoute + "/foo"), default);
             });
         }
 
@@ -81,8 +81,8 @@ namespace Messerli.Routing.Test
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, default);
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute + "/foo"), FailOnRequest);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RegisteredRoute), default);
             });
         }
 
@@ -91,8 +91,8 @@ namespace Messerli.Routing.Test
         {
             AssertRouteWasCalled(RegisteredRoute, routeRegistry =>
             {
-                routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute, default);
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute + "/foo"), FailOnRequest);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RegisteredRoute), default);
             });
         }
 
@@ -101,7 +101,7 @@ namespace Messerli.Routing.Test
         {
             AssertRouteWasCalled(RootRoute, routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, RootRoute, default);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RootRoute), default);
             });
         }
 
@@ -118,9 +118,9 @@ namespace Messerli.Routing.Test
 
             const string subRoute = RegisteredRoute + "/foo";
             var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
-            routeRegistry.Register(HttpMethod.Get, subRoute, HandleRequest);
-            routeRegistry.Route(HttpMethod.Get, subRoute, default);
+            routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute), FailOnRequest);
+            routeRegistry.Register(new Endpoint(HttpMethod.Get, subRoute), HandleRequest);
+            routeRegistry.Route(new Endpoint(HttpMethod.Get, subRoute), default);
 
             Assert.True(routeWasCalled);
         }
@@ -131,7 +131,7 @@ namespace Messerli.Routing.Test
         {
             var routeRegistry = CreateRouteRegistry();
             Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, route, FailOnRequest));
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, route), FailOnRequest));
         }
 
         [Theory]
@@ -139,7 +139,7 @@ namespace Messerli.Routing.Test
         public void CallsFallbackWhenRoutingInvalidRoute(string route)
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
-                routeRegistry.Route(HttpMethod.Get, route, default));
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, route), default));
         }
 
         public static TheoryData<string> InvalidRoutes()
@@ -197,7 +197,7 @@ namespace Messerli.Routing.Test
                 RegisteredRouteWithParam,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RegisteredRoute + "/" + param), default);
             });
         }
 
@@ -210,7 +210,7 @@ namespace Messerli.Routing.Test
                 RegisteredRouteWithParam,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RegisteredRoute + "/" + param), default);
             });
         }
 
@@ -223,7 +223,7 @@ namespace Messerli.Routing.Test
                 RootRouteWithParam,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, "/" + param, default);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, "/" + param), default);
             });
         }
 
@@ -238,7 +238,7 @@ namespace Messerli.Routing.Test
                 RegisteredRouteWithParams,
                 routeRegistry =>
             {
-                routeRegistry.Route(HttpMethod.Get, $"{RegisteredRoute}/{firstParam}/ages/{secondParam}", default);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, $"{RegisteredRoute}/{firstParam}/ages/{secondParam}"), default);
             });
         }
 
@@ -252,8 +252,8 @@ namespace Messerli.Routing.Test
                 routeRegistry =>
             {
                 routeRegistry
-                    .Register(HttpMethod.Get, RootRoute, FailOnRequest)
-                    .Route(HttpMethod.Get, $"/{name}", default);
+                    .Register(new Endpoint(HttpMethod.Get, RootRoute), FailOnRequest)
+                    .Route(new Endpoint(HttpMethod.Get, $"/{name}"), default);
             });
         }
 
@@ -269,8 +269,8 @@ namespace Messerli.Routing.Test
                 routeRegistry =>
             {
                 routeRegistry
-                    .Register(HttpMethod.Get, moreLiteralRoute, FailOnRequest)
-                    .Route(HttpMethod.Get, $"{RegisteredRoute}/foo/bar/baz", default);
+                    .Register(new Endpoint(HttpMethod.Get, moreLiteralRoute), FailOnRequest)
+                    .Route(new Endpoint(HttpMethod.Get, $"{RegisteredRoute}/foo/bar/baz"), default);
             });
         }
 
@@ -286,8 +286,8 @@ namespace Messerli.Routing.Test
                 routeRegistry =>
             {
                 routeRegistry
-                    .Register(HttpMethod.Get, ambiguousRoute, FailOnRequest)
-                    .Route(HttpMethod.Get, $"{RegisteredRoute}/{name}", default);
+                    .Register(new Endpoint(HttpMethod.Get, ambiguousRoute), FailOnRequest)
+                    .Route(new Endpoint(HttpMethod.Get, $"{RegisteredRoute}/{name}"), default);
             });
         }
 
@@ -319,13 +319,13 @@ namespace Messerli.Routing.Test
 
             var routeRegistry = CreateRouteRegistry();
             routeRegistry
-                .Register(HttpMethod.Get, "/foo/bar/baz", HandleFirstRequest)
-                .Register(HttpMethod.Get, "/foo/{bar}", HandleSecondRequest)
-                .Register(HttpMethod.Get, "/{foo}", HandleThirdRequest);
+                .Register(new Endpoint(HttpMethod.Get, "/foo/bar/baz"), HandleFirstRequest)
+                .Register(new Endpoint(HttpMethod.Get, "/foo/{bar}"), HandleSecondRequest)
+                .Register(new Endpoint(HttpMethod.Get, "/{foo}"), HandleThirdRequest);
 
-            routeRegistry.Route(HttpMethod.Get, "/foo/bar/baz", default);
-            routeRegistry.Route(HttpMethod.Get, "/foo/BAR", default);
-            routeRegistry.Route(HttpMethod.Get, "/FOO", default);
+            routeRegistry.Route(new Endpoint(HttpMethod.Get, "/foo/bar/baz"), default);
+            routeRegistry.Route(new Endpoint(HttpMethod.Get, "/foo/BAR"), default);
+            routeRegistry.Route(new Endpoint(HttpMethod.Get, "/FOO"), default);
 
             Assert.All(calledRoutes, Assert.True);
         }
@@ -335,7 +335,7 @@ namespace Messerli.Routing.Test
         public void CallsFallbackWhenRoutingInvalidRouteParam(string param)
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
-                routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default));
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, RegisteredRoute + "/" + param), default));
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace Messerli.Routing.Test
         {
             var routeRegistry = CreateRouteRegistry();
             var exception = Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest, FailOnValidation));
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute), FailOnRequest, FailOnValidation));
 
             Assert.Null(exception.InnerException);
         }
@@ -361,7 +361,7 @@ namespace Messerli.Routing.Test
             }
 
             var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest, ValidateParameters);
+            routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRouteWithParams), FailOnRequest, ValidateParameters);
 
             Assert.True(validationWasCalled);
         }
@@ -372,7 +372,7 @@ namespace Messerli.Routing.Test
             var routeRegistry = CreateRouteRegistry();
 
             var exception = Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest, FailOnValidation));
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRouteWithParams), FailOnRequest, FailOnValidation));
 
             Assert.IsType<InvalidOperationException>(exception.InnerException);
         }
@@ -432,7 +432,7 @@ namespace Messerli.Routing.Test
             }
 
             var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, registeredRoute, HandleRequest);
+            routeRegistry.Register(new Endpoint(HttpMethod.Get, registeredRoute), HandleRequest);
 
             stateManipulation(routeRegistry);
 
@@ -454,7 +454,7 @@ namespace Messerli.Routing.Test
             }
 
             var routeRegistry = CreateRouteRegistry();
-            routeRegistry.Register(HttpMethod.Get, registeredRoute, HandleRequest);
+            routeRegistry.Register(new Endpoint(HttpMethod.Get, registeredRoute), HandleRequest);
 
             stateManipulation(routeRegistry);
 
