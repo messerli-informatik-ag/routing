@@ -6,5 +6,11 @@
             SegmentNode<TRequest, TResponse> segmentTree,
             Endpoint endpoint,
             HandleRequest<TRequest, TResponse> handleRequest);
+
+        void Register(
+            SegmentNode<TRequest, TResponse> segmentTree,
+            Endpoint endpoint,
+            HandleRequest<TRequest, TResponse> handleRequest,
+            ValidateParameters validateParameters);
     }
 }

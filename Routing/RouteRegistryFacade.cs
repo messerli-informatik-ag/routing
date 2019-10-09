@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Messerli.Routing.Parsing;
 using Messerli.Routing.SegmentRegistryFacadeImplementation;
@@ -42,7 +43,9 @@ namespace Messerli.Routing
 
         public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameters validateParameters)
         {
-            throw new NotImplementedException();
+            var endpoint = new Endpoint(method, route);
+            _routeRegistrar.Register(_segmentTree, endpoint, handleRequest, validateParameters);
+            return this;
         }
 
         public IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route)
