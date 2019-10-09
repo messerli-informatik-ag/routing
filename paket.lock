@@ -16,7 +16,6 @@ NUGET
       System.IO.Pipelines (>= 4.6) - restriction: >= netcoreapp3.0
     Microsoft.CodeCoverage (16.3) - restriction: || (>= net45) (>= netcoreapp1.0)
     Microsoft.CSharp (4.6) - restriction: || (&& (< netstandard1.3) (>= uap10.0)) (&& (< netstandard2.0) (>= uap10.0))
-    Microsoft.Extensions.Logging.Abstractions (2.2)
     Microsoft.Extensions.Primitives (3.0) - restriction: >= netstandard2.0
       System.Memory (>= 4.5.2) - restriction: && (< netcoreapp3.0) (>= netstandard2.0)
       System.Runtime.CompilerServices.Unsafe (>= 4.6) - restriction: && (< netcoreapp3.0) (>= netstandard2.0)
