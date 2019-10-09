@@ -152,6 +152,16 @@ namespace Messerli.Routing.Test
             });
         }
 
+        [Fact]
+        public void CallsParentRouteWhenRequestPathEndsWithMoreThanOneSegmentDelimiter()
+        {
+            AssertRouteWasCalled("/echo", routeRegistry =>
+            {
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, "/echo/{message}"), FailOnRequest);
+                routeRegistry.Route(new Endpoint(HttpMethod.Get, "/echo///"), default);
+            });
+        }
+
         public static TheoryData<string> InvalidRoutes()
         {
             return new TheoryData<string>
