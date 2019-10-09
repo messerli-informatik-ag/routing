@@ -81,7 +81,14 @@ namespace Messerli.Routing.SegmentRegistryFacadeImplementation
                     "Passing a parameter validation callback to the registration of a route with no parameters is useless.");
             }
 
-            validateParameters(parameters);
+            try
+            {
+                validateParameters(parameters);
+            }
+            catch (Exception exception)
+            {
+                throw new ArgumentException("Parameter validation failed", exception);
+            }
         }
     }
 }

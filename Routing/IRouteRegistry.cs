@@ -8,9 +8,9 @@ namespace Messerli.Routing
     public delegate TResponse HandleRequest<in TRequest, out TResponse>(TRequest request, RouteParams routeParams);
 
     /// <summary>
-    /// Validation callback that is expected to throw an <exception cref="ArgumentException">ArgumentException</exception> when the route parameters are invalid.
+    /// Validation callback that is expected to throw an exception when the route parameters are invalid.
     /// </summary>
-    /// <exception cref="ArgumentException">Throw this exception when the parameters are invalid according to your own business logic.</exception>
+    /// <exception cref="Exception">Throw something when the parameters are invalid according to your own business logic.</exception>
     public delegate void ValidateParameters(IEnumerable<string> parameters);
 
     public interface IRouteRegistry<TRequest, TResponse>
