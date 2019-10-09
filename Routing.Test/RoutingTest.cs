@@ -331,6 +331,45 @@ namespace Messerli.Routing.Test
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default));
         }
 
+        [Fact]
+        public void ThrowsWhenValidatingRouteWithNoParameters()
+        {
+            var routeRegistry = CreateRouteRegistry();
+            var exception = Assert.Throws<ArgumentException>(() =>
+                routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest, FailOnValidation));
+
+            Assert.Null(exception.InnerException);
+        }
+
+        [Fact]
+        public void AllParametersArePassedToValidation()
+        {
+            var validationWasCalled = false;
+
+            void ValidateParameters(IEnumerable<string> parameters)
+            {
+                var expectedParameters = new[] { NameKey, AgeKey };
+                Assert.Equal(expectedParameters, parameters);
+                validationWasCalled = true;
+            }
+
+            var routeRegistry = CreateRouteRegistry();
+            routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest, ValidateParameters);
+
+            Assert.True(validationWasCalled);
+        }
+
+        [Fact]
+        public void WrapsExceptionOfFailedValidation()
+        {
+            var routeRegistry = CreateRouteRegistry();
+
+            var exception = Assert.Throws<ArgumentException>(() =>
+                routeRegistry.Register(HttpMethod.Get, RegisteredRouteWithParams, FailOnRequest, FailOnValidation));
+
+            Assert.IsType<InvalidOperationException>(exception.InnerException);
+        }
+
         public static TheoryData<string> InvalidParams()
         {
             return new TheoryData<string>
@@ -430,6 +469,11 @@ namespace Messerli.Routing.Test
         private static Unit FailOnRequest(Unit request, IDictionary<string, string> routeParams)
         {
             throw new InvalidOperationException("Request handler was unexpectedly called");
+        }
+
+        private static void FailOnValidation(IEnumerable<string> parameters)
+        {
+            throw new InvalidOperationException("Parameter validation has failed");
         }
 
         private static Dictionary<string, string> CreateExpectedParams(params (string, string)[] keyValuePairs)
