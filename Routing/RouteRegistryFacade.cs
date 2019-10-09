@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using Messerli.Routing.Parsing;
-using Messerli.Routing.SegmentRegistryFacadeImplementation;
+﻿using Messerli.Routing.SegmentRegistryFacadeImplementation;
 using Messerli.Routing.SegmentVariant;
 
 namespace Messerli.Routing
