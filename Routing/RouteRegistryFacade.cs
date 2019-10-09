@@ -41,10 +41,14 @@ namespace Messerli.Routing
             return this;
         }
 
-        public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameters validateParameters)
+        public IRouteRegistry<TRequest, TResponse> Register(
+            HttpMethod method,
+            string route,
+            HandleRequest<TRequest, TResponse> handleRequest,
+            ValidateParameterKeys validateParameterKeys)
         {
             var endpoint = new Endpoint(method, route);
-            _routeRegistrar.Register(_segmentTree, endpoint, handleRequest, validateParameters);
+            _routeRegistrar.Register(_segmentTree, endpoint, handleRequest, validateParameterKeys);
             return this;
         }
 

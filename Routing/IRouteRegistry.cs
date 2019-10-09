@@ -11,7 +11,7 @@ namespace Messerli.Routing
     /// Validation callback that is expected to throw an exception when the route parameters are invalid.
     /// </summary>
     /// <exception cref="Exception">Throw something when the parameters are invalid according to your own business logic.</exception>
-    public delegate void ValidateParameters(IEnumerable<string> parameters);
+    public delegate void ValidateParameterKeys(IEnumerable<string> parameters);
 
     public interface IRouteRegistry<TRequest, TResponse>
     {
@@ -19,7 +19,7 @@ namespace Messerli.Routing
 
         IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest);
 
-        IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameters validateParameters);
+        IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameterKeys validateParameterKeys);
 
         IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route);
     }
