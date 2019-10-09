@@ -21,17 +21,17 @@ namespace Messerli.Routing.Test
         private static readonly string RegisteredRouteWithParams = $"{RegisteredRouteWithParam}/ages/{{{AgeKey}}}";
 
         [Fact]
-        public void CallsFallbackRequestHandlerWhenNoOthersAreRegistered()
-        {
-            AssertCallToFallbackRequestHandler(routeRegistry =>
-                    routeRegistry.Route(HttpMethod.Get, "/foo", default));
-        }
-
-        [Fact]
         public void FallbackHandlerCanBeCalled()
         {
             AssertCallToFallbackRequestHandler(routeRegistry =>
                 routeRegistry.CallFallbackHandler(default));
+        }
+
+        [Fact]
+        public void CallsFallbackRequestHandlerWhenNoOthersAreRegistered()
+        {
+            AssertCallToFallbackRequestHandler(routeRegistry =>
+                    routeRegistry.Route(HttpMethod.Get, "/foo", default));
         }
 
         [Fact]
