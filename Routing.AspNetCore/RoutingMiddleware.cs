@@ -36,11 +36,12 @@ namespace Messerli.Routing.AspNetCore
         public async Task Invoke(HttpContext context)
         {
             var method = new HttpMethod(context.Request.Method);
+            var endpoint = new Endpoint(method, context.Request.Path);
             var request = _mapContextToRequest(context);
 
             try
             {
-                var response = _routeRegistry.Route(method, context.Request.Path, request);
+                var response = _routeRegistry.Route(endpoint, request);
                 await ApplyResponseToContext(context, response);
             }
             catch (Exception exception)

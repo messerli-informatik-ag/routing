@@ -17,12 +17,12 @@ namespace Messerli.Routing
     {
         TResponse CallFallbackHandler(TRequest request);
 
-        TResponse Route(HttpMethod method, string path, TRequest request);
+        TResponse Route(Endpoint endpoint, TRequest request);
 
-        IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest);
+        IRouteRegistry<TRequest, TResponse> Register(Endpoint endpoint, HandleRequest<TRequest, TResponse> handleRequest);
 
-        IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameterKeys validateParameterKeys);
+        IRouteRegistry<TRequest, TResponse> Register(Endpoint endpoint, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameterKeys validateParameterKeys);
 
-        IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route);
+        IRouteRegistry<TRequest, TResponse> Remove(Endpoint endpoint);
     }
 }

@@ -2,10 +2,10 @@
 
 using System.Net.Http;
 
-namespace Messerli.Routing.SegmentRegistryFacadeImplementation
+namespace Messerli.Routing
 {
     [Equals]
-    internal sealed class Endpoint
+    public sealed class Endpoint
     {
         public Endpoint(HttpMethod method, string route)
         {
