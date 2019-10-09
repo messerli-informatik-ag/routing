@@ -40,6 +40,11 @@ namespace Messerli.Routing
             return this;
         }
 
+        public IRouteRegistry<TRequest, TResponse> Register(HttpMethod method, string route, HandleRequest<TRequest, TResponse> handleRequest, ValidateParameters validateParameters)
+        {
+            throw new NotImplementedException();
+        }
+
         public IRouteRegistry<TRequest, TResponse> Remove(HttpMethod method, string route)
         {
             var endpoint = new Endpoint(method, route);
