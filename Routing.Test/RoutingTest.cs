@@ -21,23 +21,23 @@ namespace Messerli.Routing.Test
         private static readonly string RegisteredRouteWithParams = $"{RegisteredRouteWithParam}/ages/{{{AgeKey}}}";
 
         [Fact]
-        public void CallsFallbackRouteWhenNoOthersAreRegistered()
+        public void CallsFallbackRequestHandlerWhenNoOthersAreRegistered()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
                     routeRegistry.Route(HttpMethod.Get, "/foo", default));
         }
 
         [Fact]
         public void FallbackHandlerCanBeCalled()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
                 routeRegistry.CallFallbackHandler(default));
         }
 
         [Fact]
-        public void CallsFallbackRouteWhenOtherRouteIsRegistered()
+        public void CallsFallbackRequestHandlerWhenOtherRouteIsRegistered()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, "/bar", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, "/foo", default);
@@ -45,9 +45,9 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void CallsFallbackRouteWhenOtherMethodIsRegistered()
+        public void CallsFallbackRequestHandlerWhenOtherMethodIsRegistered()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Post, "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, "/foo", default);
@@ -55,9 +55,9 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void CallsFallbackRouteWhenRegisteredRouteWasRemoved()
+        public void CallsFallbackRequestHandlerWhenRegisteredRouteWasRemoved()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
             {
                 const string route = "/foo";
                 routeRegistry.Register(HttpMethod.Get, route, FailOnRequest);
@@ -67,9 +67,9 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void CallsFallbackRouteWhenCallingSubRouteOfRegisteredRoute()
+        public void CallsFallbackRequestHandlerWhenCallingSubRouteOfRegisteredRoute()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute, FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/foo", default);
@@ -77,9 +77,9 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void CallsFallbackRouteWhenCallingParentRouteOfRegisteredSubRoute()
+        public void CallsFallbackRequestHandlerWhenCallingParentRouteOfRegisteredSubRoute()
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
             {
                 routeRegistry.Register(HttpMethod.Get, RegisteredRoute + "/foo", FailOnRequest);
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute, default);
@@ -138,7 +138,7 @@ namespace Messerli.Routing.Test
         [MemberData(nameof(InvalidRoutes))]
         public void CallsFallbackWhenRoutingInvalidRoute(string route)
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
                 routeRegistry.Route(HttpMethod.Get, route, default));
         }
 
@@ -334,7 +334,7 @@ namespace Messerli.Routing.Test
         [MemberData(nameof(InvalidParams))]
         public void CallsFallbackWhenRoutingInvalidRouteParam(string param)
         {
-            AssertCallToFallbackRoute(routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
                 routeRegistry.Route(HttpMethod.Get, RegisteredRoute + "/" + param, default));
         }
 
@@ -403,7 +403,7 @@ namespace Messerli.Routing.Test
             };
         }
 
-        private static void AssertCallToFallbackRoute(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
+        private static void AssertCallToFallbackRequestHandler(Action<IRouteRegistry<Unit, Unit>> stateManipulation)
         {
             var fallbackWasCalled = false;
 
