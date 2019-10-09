@@ -7,3 +7,6 @@
 - Add API for parameter key validation on registration
 - Expose fallback request handler
 - Simplify API by exposing `Endpoint`
+
+## Unreleased
+- Trailing slashes in paths are now ignored.
