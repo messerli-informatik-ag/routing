@@ -35,6 +35,9 @@ namespace Messerli.Routing.SegmentRegistryFacadeImplementation
                 : requestHandlingData(request);
         }
 
+        public TResponse CallFallbackHandler(TRequest request) =>
+            _handleFallbackRequest(request);
+
         private static Func<TRequest, TResponse>?
             Match(
                 SegmentNode<TRequest, TResponse> node,
