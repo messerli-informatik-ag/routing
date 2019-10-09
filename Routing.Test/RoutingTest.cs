@@ -28,6 +28,13 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
+        public void FallbackHandlerCanBeCalled()
+        {
+            AssertCallToFallbackRoute(routeRegistry =>
+                routeRegistry.CallFallbackHandler(default));
+        }
+
+        [Fact]
         public void CallsFallbackRouteWhenOtherRouteIsRegistered()
         {
             AssertCallToFallbackRoute(routeRegistry =>

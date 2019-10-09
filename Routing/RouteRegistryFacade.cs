@@ -28,6 +28,11 @@ namespace Messerli.Routing
             _router = router;
         }
 
+        public TResponse CallFallbackHandler(TRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         public TResponse Route(HttpMethod method, string path, TRequest request)
         {
             var endpoint = new Endpoint(method, path);
