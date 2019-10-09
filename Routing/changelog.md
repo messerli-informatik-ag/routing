@@ -4,4 +4,4 @@
 - Initial release
 
 ## TBA
-- Add API for parameter validation on registration
+- Add API for parameter key validation on registration
