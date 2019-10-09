@@ -5,3 +5,4 @@
 
 ## TBA
 - Add API for parameter key validation on registration
+- Expose fallback request handler
