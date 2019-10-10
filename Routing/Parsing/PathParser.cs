@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static Messerli.Routing.Parsing.PathParsing;
 
@@ -53,7 +54,7 @@ namespace Messerli.Routing.Parsing
 
         private static ICollection<string>? ParseSegments(string path)
         {
-            var segments = SplitSegments(path);
+            var segments = SplitSegments(TrimTrailingSegmentDelimiter(path));
             if (segments is null)
             {
                 return null;
@@ -63,6 +64,13 @@ namespace Messerli.Routing.Parsing
                 ? segments.Prepend("/").ToList()
                 : null;
         }
+
+        #pragma warning disable SA1003
+        private static string TrimTrailingSegmentDelimiter(string path) =>
+            path.Length > 1 && path.EndsWith(SegmentDelimiterToken)
+                ? path[..^1]
+                : path;
+        #pragma warning restore SA1003
 
         private static bool AreSegmentsValid(IEnumerable<string> segments) =>
             segments.All(IsValidSegment);

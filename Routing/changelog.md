@@ -7,3 +7,6 @@
 - Add API for parameter key validation on registration
 - Expose fallback request handler
 - Simplify API by exposing `Endpoint`
+
+## Unreleased
+- A single trailing "/" is now trimmed before routing.
