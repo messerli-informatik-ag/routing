@@ -9,4 +9,4 @@
 - Simplify API by exposing `Endpoint`
 
 ## Unreleased
-- Trailing slashes in paths are now ignored.
+- A single trailing "/" is now trimmed before routing.
