@@ -6,6 +6,6 @@
 ## 0.2.0
 - Use newest Messerli.Routing
 
-## Unreleased
+## 0.3.0
 - Errors thrown by request handlers are no longer caught and logged,
   but propagated instead.
