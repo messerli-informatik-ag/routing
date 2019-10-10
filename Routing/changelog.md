@@ -8,5 +8,5 @@
 - Expose fallback request handler
 - Simplify API by exposing `Endpoint`
 
-## Unreleased
+## 0.3.0
 - A single trailing "/" is now trimmed before routing.

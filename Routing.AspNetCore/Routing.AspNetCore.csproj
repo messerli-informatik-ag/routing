@@ -8,7 +8,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AssemblyName>Messerli.Routing.AspNetCore</AssemblyName>
         <RootNamespace>Messerli.Routing.AspNetCore</RootNamespace>
-        <Version>0.2.0</Version>
+        <Version>0.3.0</Version>
         <RepositoryUrl>https://github.com/messerli-informatik-ag/routing</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageId>Messerli.Routing.AspNetCore</PackageId>
