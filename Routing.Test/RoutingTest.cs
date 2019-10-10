@@ -153,11 +153,11 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void CallsParentRouteWhenRequestPathEndsWithMoreThanOneSegmentDelimiter()
+        public void CallsFallbackRouteWhenRequestPathEndsWithMoreThanOneSegmentDelimiter()
         {
-            AssertRouteWasCalled("/echo", routeRegistry =>
+            AssertCallToFallbackRequestHandler(routeRegistry =>
             {
-                routeRegistry.Register(new Endpoint(HttpMethod.Get, "/echo/{message}"), FailOnRequest);
+                routeRegistry.Register(new Endpoint(HttpMethod.Get, "/echo"), FailOnRequest);
                 routeRegistry.Route(new Endpoint(HttpMethod.Get, "/echo///"), default);
             });
         }
