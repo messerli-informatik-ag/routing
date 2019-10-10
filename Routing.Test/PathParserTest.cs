@@ -7,14 +7,14 @@ namespace Messerli.Routing.Test
     public class PathParserTest
     {
         [Theory]
-        [MemberData(nameof(NormalizedPaths))]
+        [MemberData(nameof(SplitPaths))]
         public void PathParserTrimsOneTrailingSegmentDelimiter(IEnumerable<string> expectedSegments, string path)
         {
             var pathParser = new PathParser();
             Assert.Equal(expectedSegments, pathParser.Parse(path));
         }
 
-        public static TheoryData<IEnumerable<string>, string> NormalizedPaths()
+        public static TheoryData<IEnumerable<string>, string> SplitPaths()
         {
             return new TheoryData<IEnumerable<string>, string>
             {
