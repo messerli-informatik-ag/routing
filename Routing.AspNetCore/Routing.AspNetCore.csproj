@@ -14,7 +14,6 @@
         <PackageId>Messerli.Routing.AspNetCore</PackageId>
         <PackageTags>http routing aspnetcore</PackageTags>
         <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
-        <Authors>Jan Nils Ferner, Ruben Schmidmeister</Authors>
         <Copyright>© Messerli Informatik AG. All rights reserved.</Copyright>
         <Description>Routing middleware for ASP.NET Core that allows dynamic route insertion and deletion at any time.</Description>
     </PropertyGroup>
