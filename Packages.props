@@ -5,6 +5,7 @@
 		<PackageReference Update="Microsoft.AspNetCore.Http.Abstractions" Version="[2.2, 3)" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Update="Messerli.CodeStyle" Version="1.0.1" />
 		<PackageReference Update="Equals.Fody" Version="[4.0, 5)" />
 		<PackageReference Update="Fody" Version="[6.0, 7)" />
 	</ItemGroup>
