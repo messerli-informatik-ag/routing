@@ -19,26 +19,22 @@ namespace Messerli.Routing.AspNetCore.Test
         [Fact]
         public async Task FallbackRouteIsCalled()
         {
-            using (var server = CreateTestServer())
-            using (var client = server.CreateClient())
-            {
-                var response = await client.GetAsync("/");
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Assert.Equal(FallbackResponse, responseBody);
-            }
+            using var server = CreateTestServer();
+            using var client = server.CreateClient();
+            using var response = await client.GetAsync("/");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Assert.Equal(FallbackResponse, responseBody);
         }
 
         [Fact]
         public async Task ErrorsArePropagated()
         {
-            using (var server = CreateTestServer())
-            using (var client = server.CreateClient())
+            using var server = CreateTestServer();
+            using var client = server.CreateClient();
+            await Assert.ThrowsAsync<CustomException>(async () =>
             {
-                await Assert.ThrowsAsync<CustomException>(async () =>
-                {
-                    await client.GetAsync(ErrorRoute);
-                });
-            }
+                await client.GetAsync(ErrorRoute);
+            });
         }
 
         private static TestServer CreateTestServer() =>
