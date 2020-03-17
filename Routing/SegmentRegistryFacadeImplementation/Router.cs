@@ -79,7 +79,7 @@ namespace Messerli.Routing.SegmentRegistryFacadeImplementation
         private static bool NodeMatchesSegment(SegmentNode<TRequest, TResponse> node, string segment) =>
             !(node.Matcher is Literal { Identifier: var matchingSegment } && segment != matchingSegment);
 
-        private static IDictionary<TKey, TValue> AddToDictionary<TKey, TValue>(IDictionary<TKey, TValue> dictionary, (TKey, TValue) keyValuePair)
+        private static IDictionary<TKey, TValue> AddToDictionary<TKey, TValue>(IDictionary<TKey, TValue> dictionary, (TKey Key, TValue Value) keyValuePair)
         {
             var (key, value) = keyValuePair;
             return new Dictionary<TKey, TValue>(dictionary)

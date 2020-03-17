@@ -22,7 +22,7 @@ namespace Messerli.Routing.AspNetCore.Test
             using (var server = CreateTestServer())
             using (var client = server.CreateClient())
             {
-                var response = await client.GetAsync("/");
+                using var response = await client.GetAsync("/");
                 var responseBody = await response.Content.ReadAsStringAsync();
                 Assert.Equal(FallbackResponse, responseBody);
             }
