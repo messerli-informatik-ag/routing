@@ -6,8 +6,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Update="Messerli.CodeStyle" Version="1.0.1" />
-		<PackageReference Update="Equals.Fody" Version="[4.0, 5)" />
-		<PackageReference Update="Fody" Version="[6.0, 7)" />
+		<PackageReference Update="Equals.Fody" Version="[4.0.1, 5)" />
+		<PackageReference Update="Fody" Version="[6.1.1, 7)" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Update="Microsoft.AspNetCore.TestHost" Version="[3.0, 4)" />
