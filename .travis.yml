@@ -7,11 +7,7 @@ env:
   global:
     - PATH="$PATH:$HOME/.dotnet/tools"
 
-install:
-  - dotnet tool restore 
-
 script:
- - dotnet paket install
  - dotnet restore
- - dotnet build
- - dotnet test
+ - dotnet build --no-restore
+ - dotnet test --no-restore
