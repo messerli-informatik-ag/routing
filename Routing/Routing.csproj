@@ -17,5 +17,8 @@
         <Copyright>© Messerli Informatik AG. All rights reserved.</Copyright>
         <Description>Routing implementation that allows dynamic route insertion and deletion at any time.</Description>
     </PropertyGroup>
-    <Import Project="..\.paket\Paket.Restore.targets" />
+    <ItemGroup>
+        <PackageReference Include="Equals.Fody" PrivateAssets="All" />
+        <PackageReference Include="Fody" PrivateAssets="All" />
+    </ItemGroup>
 </Project>

@@ -20,5 +20,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Routing\Routing.csproj" />
     </ItemGroup>
-    <Import Project="..\.paket\Paket.Restore.targets" />
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+    </ItemGroup>
 </Project>
