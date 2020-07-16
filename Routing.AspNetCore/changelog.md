@@ -12,4 +12,4 @@
 - Use newest Messerli.Routing
 
 ## 0.3.1
-- Use Messerli.Routing 0.3.1.
+- Update to Messerli.Routing 0.3.1.
