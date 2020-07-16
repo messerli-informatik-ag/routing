@@ -10,3 +10,6 @@
 
 ## 0.3.0
 - A single trailing "/" is now trimmed before routing.
+
+## 0.3.1
+- Update to Funcky 2.0.0.
