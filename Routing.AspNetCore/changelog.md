@@ -10,3 +10,6 @@
 - Errors thrown by request handlers are no longer caught and logged,
   but propagated instead.
 - Use newest Messerli.Routing
+
+## 0.3.1
+- Use Messerli.Routing 0.3.1.
