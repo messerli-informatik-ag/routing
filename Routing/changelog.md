@@ -13,3 +13,6 @@
 
 ## 0.3.1
 - Update to Funcky 2.0.0.
+
+## 0.3.2
+- Allow validation for parameterless routes
