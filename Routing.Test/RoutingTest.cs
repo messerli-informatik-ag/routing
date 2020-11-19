@@ -359,13 +359,10 @@ namespace Messerli.Routing.Test
         }
 
         [Fact]
-        public void ThrowsWhenValidatingRouteWithNoParameters()
+        public void AllowValidatingRouteWithNoParameters()
         {
             var routeRegistry = CreateRouteRegistry();
-            var exception = Assert.Throws<ArgumentException>(() =>
-                routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute), FailOnRequest, FailOnValidation));
-
-            Assert.Null(exception.InnerException);
+            routeRegistry.Register(new Endpoint(HttpMethod.Get, RegisteredRoute), FailOnRequest, EmptyValidation);
         }
 
         [Fact]
@@ -496,6 +493,10 @@ namespace Messerli.Routing.Test
         private static Unit FailOnRequest(Unit request, IDictionary<string, string> routeParams)
         {
             throw new InvalidOperationException("Request handler was unexpectedly called");
+        }
+
+        private static void EmptyValidation(IEnumerable<string> parameters)
+        {
         }
 
         private static void FailOnValidation(IEnumerable<string> parameters)

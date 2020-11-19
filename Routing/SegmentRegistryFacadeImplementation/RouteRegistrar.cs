@@ -81,12 +81,6 @@ namespace Messerli.Routing.SegmentRegistryFacadeImplementation
                 .Select(parameter => parameter.Key)
                 .ToList();
 
-            if (!parameters.Any())
-            {
-                throw new ArgumentException(
-                    "Passing a parameter validation callback to the registration of a route with no parameters is useless.");
-            }
-
             try
             {
                 validateParameterKeys(parameters);
