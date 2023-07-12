@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Messerli.CodeStyle" PrivateAssets="All" />
 	</ItemGroup>
+	<PropertyGroup>
+		<Authors>Messerli Informatik AG</Authors>
+		<Copyright>© Messerli Informatik AG. All rights reserved.</Copyright>
+	</PropertyGroup>
 </Project>
